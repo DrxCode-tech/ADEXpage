@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelector('.spinner-container1').style.display = 'flex';
       console.log("User already logged in.");
       setTimeout(() => {
-        window.location.href = "V2ADEX.html"; // redirect after 1.5 sec
+        window.location.href = "V3ADEX.html"; // redirect after 1.5 sec
       }, 1500);
     } else {
       console.log("No user found.");
