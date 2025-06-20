@@ -55,7 +55,7 @@ function process(state, txt) {
 //on page load
 document.addEventListener('DOMContentLoaded',()=>{
   //open indexedDB
-  const request = indexedDB.open('adexDBusers',1);
+  const request = indexedDB.open('adexusers',1);
   
   request.onupgradeneeded = function(e){
     const DB = e.target.result;
