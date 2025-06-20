@@ -1,4 +1,4 @@
-// --- Firebase Setup ---mark
+.// --- Firebase Setup ---mark
 import { db } from "./firebaseConfig.js";
 import {
   query,
