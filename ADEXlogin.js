@@ -100,7 +100,7 @@ async function findUserInFirestore(uid, dept) {
 }
 
 function clearUserData() {
-  const request = indexedDB.open('adexDBusers', 1);
+  const request = indexedDB.open('adexusers', 1);
   request.onsuccess = function (event) {
     const db = event.target.result;
     if (db.objectStoreNames.contains('users')) {
@@ -113,7 +113,7 @@ function clearUserData() {
 }
 //function for adding current user to database...
 function addUserToIndexedDB(userObj) {
-  const request = indexedDB.open('adexDBusers', 1);
+  const request = indexedDB.open('adexusers', 1);
   request.onupgradeneeded = function (event) {
     const db = event.target.result;
     if (!db.objectStoreNames.contains('users')) {
