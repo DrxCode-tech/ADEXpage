@@ -97,7 +97,7 @@ window.addEventListener('DOMContentLoaded', () => {
     cancelState = !cancelState;
   })
   
-  const request = indexedDB.open('adexDBusers', 1);
+  const request = indexedDB.open('adexusers', 1);
   
   request.onupgradeneeded = function (event) {
     const DB = event.target.result;
