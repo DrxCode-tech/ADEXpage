@@ -135,7 +135,7 @@ function getForVerification() {
 
 // Ensure DB and store exist, then check if user exists
 function initAndCheckUser(callback) {
-  const request = indexedDB.open("adexDBusers", 1);
+  const request = indexedDB.open("adexusers", 1);
 
   request.onupgradeneeded = function(event) {
     const idb = event.target.result;
@@ -180,7 +180,7 @@ function initAndCheckUser(callback) {
 
 // Store user data under key "currentUser"
 function storeUser(user) {
-  const request = indexedDB.open("adexDBusers", 1);
+  const request = indexedDB.open("adexusers", 1);
 
   request.onupgradeneeded = function(event) {
     const db = event.target.result;
