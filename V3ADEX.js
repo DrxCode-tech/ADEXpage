@@ -400,7 +400,7 @@ markBt.addEventListener('click',async (e)=>{
   const department = (Department.textContent.trim() !== 'Department') ? Department.textContent.trim() : false;
   const cours = (currentCourseDisplay.textContent.trim() !== 'No class') ? currentCourseDisplay.textContent.trim() : false;
   
-  if(!name || !regNm || !department || !course) return alert('All ADEX field must be filled!');
+  if(!name || !regNm || !department || !cours) return alert('All ADEX field must be filled!');
 
   const course = cours.replace(/\s+/g, '').toUpperCase();
   
