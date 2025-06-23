@@ -282,7 +282,7 @@ html,body{
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
   z-index: 3;
-  overflow: hidden;
+  overflow: scroll;
   transition-duration: 1s;
   font-size: 17px;
   font-weight: 650;
