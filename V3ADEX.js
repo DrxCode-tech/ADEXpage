@@ -224,7 +224,7 @@ function checkAttendanceState() {
     case 2: // Tuesday
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "MTH122");
       else if (hour >= 10 && hour < 12) changeCourse(10, 12, "PHY122");
-      else if (hour >= 13 && hour < 15) changeCourse(13, 15, "GST121");
+      else if (hour >= 13 && hour < 15) changeCourse(13, 15, "GET121");
       else if (hour >= 15 && hour < 17) changeCourse(15, 17, "STA121");
       break;
     case 3: // Wednesday
