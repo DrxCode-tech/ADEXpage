@@ -192,7 +192,7 @@ loginButton.addEventListener('submit', async (e) => {
     }
   } catch (err) {
     spin.style.display = 'none';
-    statusDisplay(false, `Login failed check network: ${err.message}`);
+    statusDisplay(false, `Login failed: ${err.message}`);
   }
 });
 
