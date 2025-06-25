@@ -164,7 +164,17 @@
       cursor: pointer;
       color: #555;
     }
-    
+    .forgotPassword{
+      margin-bottom: 5px;
+      border: none;
+      background-color: transparent;
+      font-weight: bold;
+      font-size: 0.9em;
+    }
+    .forgotPassword a{
+      color: #f0b400;
+      text-decoration: none;
+    }
     @keyframes spin {
     to {
       transform: rotate(360deg);
@@ -200,13 +210,14 @@
           </svg>
         </span>
       </div>
+      <button class="forgotPassword"><a href ='ADEXpasswordReset.html' >forgotten password?</a></button>
       <button id='login-button' type="submit">Login</button>
     </form>
     <div class="spinner-container" id="spinner">
       <div class="spinner"></div>
     </div>
     <button class="footer">
-      Don’t have an account? <a href="#">Create one</a>
+      Don’t have an account? <a href="index.html">Create one</a>
     </button>
   </div>
   <div class="messager">
