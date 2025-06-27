@@ -344,8 +344,7 @@ async function signUpUser(fullName, email, password, level, dept, regNm) {
     });
     saveForVerification(fullName,regNm,dept,level,email,password);*/
     await createUserAcct(user,fullName,regNm,email,dept,level);
-    
-    statusDisplay(true, 'Verification email sent! Please check your inbox.');
+  
     spinner.style.display = 'none';
 
     
