@@ -4,6 +4,7 @@ import {
   query,
   where,
   getDocs,
+  getDoc,
   addDoc,
   collection,
   onSnapshot,
@@ -432,13 +433,10 @@ async function markPortal(output,name,regNm,department,course,date){
     switch(output.state){
       case false :
         return await warning();
-        break;
       case 'Time_past':
         return alert('Portal has already been CLOSED...pls meet with the class Rep or ADEX to show you were present in class!');
-        break;
       case true:
         return markAttendance(name,regNm,department,course,date);
-        break;
     }
   }catch(err){
     console.log('Error from markPortal :',err.message);
@@ -483,6 +481,7 @@ markBt.addEventListener('click',async (e)=>{
     if(internet){
       const output = await verifyStudentsPortal(docm,course,date);
       await markPortal(output,name,regNm,department,course,date);
+      spinnerContainer.style.display = 'none';
       return;
     } 
     
