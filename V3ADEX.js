@@ -476,7 +476,7 @@ markBt.addEventListener('click',async (e)=>{
   */
   spinnerContainer.style.display = 'block';
   const date = getCurrentDate();
-  
+  const docm = doc(db,'Portal',course);
   //check internet connection...
   try{
     const internet = await isReallyOnline();
