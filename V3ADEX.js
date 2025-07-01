@@ -410,6 +410,7 @@ async function verifyStudentsPortal(docm,course,date){
   try{
     const result = await getDoc(docm);
     const output = result.data()[`${course}_${date}`];
+    console.log(output);
     if(!output.startTime || !output.endTime){
       return {state : false};
     }
