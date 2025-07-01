@@ -428,17 +428,21 @@ async function verifyStudentsPortal(docm,course,date){
 }
 
 async function markPortal(output,name,regNm,department,course,date){
-  switch(output.state){
-    case false :
-      return await warning();
-      break;
-    case 'Time_past':
-      return alert('Portal has already been CLOSED...pls meet with the class Rep or ADEX to show you were present in class!');
-      break;
-    case true:
-      return markAttendance(name,regNm,department,course,date);
-      break;
-    
+  try{
+    switch(output.state){
+      case false :
+        return await warning();
+        break;
+      case 'Time_past':
+        return alert('Portal has already been CLOSED...pls meet with the class Rep or ADEX to show you were present in class!');
+        break;
+      case true:
+        return markAttendance(name,regNm,department,course,date);
+        break;
+    }
+  }catch(err){
+    console.log('Error from markPortal :',err.message);
+    alert(err.message);
   }
 }
 
