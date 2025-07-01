@@ -425,7 +425,7 @@ async function verifyStudentsPortal(docm,course,date){
     if(student < output.startTime){
       return {state : false};
     }
-    if(student > output.startTime || student < output.endTime){
+    if(student > output.startTime && student < output.endTime){
       return { state : true };
     }
     if(student > output.endTime){
