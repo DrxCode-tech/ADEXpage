@@ -417,7 +417,7 @@ async function verifyStudentsPortal(docm,course,date){
   const student = getTimeInSecs();
   try{
     const result = await getDoc(docm);
-    const output = result.data()[`${course}_${date}`];
+    const output = result.data()[`${course}_${date}`][0];
     console.log(output);
     if(!output.startTime || !output.endTime){
       return {state : false};
