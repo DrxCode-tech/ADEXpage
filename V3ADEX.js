@@ -50,6 +50,14 @@ function getCurrentDate() {
   return `${day}${month}${year}`;
 }
 
+function getFormattedDate() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+  const year = now.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
 function onloadMark(){
   const request = indexedDB.open('adexDBrecord', 1);
 
@@ -474,7 +482,7 @@ markBt.addEventListener('click',async (e)=>{
   }
   */
   spinnerContainer.style.display = 'block';
-  const date = getCurrentDate();
+  const date = getFormattedDate();
   const docm = doc(db,'Portal',course);
   //check internet connection...
   try{
