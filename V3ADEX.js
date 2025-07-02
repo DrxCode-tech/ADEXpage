@@ -1,10 +1,9 @@
-// --- Firebase Setup ---mark
+// original--- Firebase Setup ---mark
 import { db } from "./firebaseConfig.js";
 import {
   query,
   where,
   getDocs,
-  getDoc,
   addDoc,
   collection,
   onSnapshot,
@@ -48,14 +47,6 @@ function getCurrentDate() {
   const month = now.getMonth() + 1; // No padStart
   const year = now.getFullYear();
   return `${day}${month}${year}`;
-}
-
-function getFormattedDate() {
-  const now = new Date();
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
-  const year = now.getFullYear();
-  return `${day}/${month}/${year}`;
 }
 
 function onloadMark(){
@@ -232,8 +223,8 @@ function checkAttendanceState() {
       break;
     case 2: // Tuesday
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "MTH122");
-      else if (hour >= 10 && hour < 12) changeCourse(10, 12, "PHY128");
-      else if (hour >= 13 && hour < 15) changeCourse(13, 15, "GST121");
+      else if (hour >= 10 && hour < 12) changeCourse(10, 12, "PHY122");
+      else if (hour >= 13 && hour < 15) changeCourse(13, 15, "GET121");
       else if (hour >= 15 && hour < 17) changeCourse(15, 17, "STA121");
       break;
     case 3: // Wednesday
@@ -242,13 +233,13 @@ function checkAttendanceState() {
       else if (hour >= 15 && hour < 17) changeCourse(15, 17, "PHY121");
       break;
     case 4: // Thursday
-      if (hour >= 8 && hour < 10) changeCourse(8, 10, "CHM123");
+      if (hour >= 8 && hour < 10) changeCourse(8, 10, "CHM128");
       break;
     case 5: // Friday
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "PHY122");
       else if (hour >= 10 && hour < 12) changeCourse(
         10, 12, "GET121");
-      else if (hour >= 13 && hour < 14) changeCourse(13, 14, "MTH122");
+      else if (hour >= 12 && hour < 13) changeCourse(12, 13, "MTH122");
       else if (hour >= 14 && hour < 16) changeCourse(14, 16, "GET121");
       break;
     default :
@@ -351,6 +342,7 @@ async function getGeoLocsUI() {
   }
 
   console.log("Trying multiple location attempts...")
+
   try {
     for (let i = 0; i < 5; i++) {
       const { latitude, longitude } = await getLocation();
@@ -399,62 +391,6 @@ async function batchMarkAttendance(studentList, course, date) {
   }
 }
 
-function getTimeInSecs(){
-  const now = new Date();
-  const hour = now.getHours();
-  const Min = now.getMinutes();
-  const Sec = now.getSeconds();
-  return hour*3600 + Min*60 + Sec;
-}
-
-async function warning(){
-  const collect = collection(db,)
-  
-  statusDisplay(false,'Warning Portal is not open...mark when portal is open!');
-}
-
-async function verifyStudentsPortal(docm,course,date){
-  const student = getTimeInSecs();
-  try{
-    const result = await getDoc(docm);
-    const fetched = result.data()[`${course}_${date}`];
-    const output = fetched[fetched.length - 1];
-    console.log(output);
-    if(!output.startTime || !output.endTime){
-      return {state : false};
-    }
-    if(student < output.startTime){
-      return {state : false};
-    }
-    if(student > output.startTime || student < output.endTime){
-      return { state : true };
-    }
-    if(student > output.endTime){
-      return { state : 'Time_past'};
-    }
-  }catch(err){
-    console.error('Error from checking if portal exist:',err.message);
-    statusDisplay(false,'check your internet connecvty');
-  }
-}
-
-async function markPortal(output,name,regNm,department,course){
-  const date = getCurrentDate();
-  try{
-    switch(output.state){
-      case false :
-        return await warning();
-      case 'Time_past':
-        return alert('Portal has already been CLOSED...pls meet with the class Rep or ADEX to show you were present in class!');
-      case true:
-        return markAttendance(name,regNm,department,course,date);
-    }
-  }catch(err){
-    console.log('Error from markPortal :',err.message);
-    alert(err.message);
-  }
-}
-
 //Marking Attendance logic
 markBt.addEventListener('click',async (e)=>{
   e.preventDefault();
@@ -462,7 +398,7 @@ markBt.addEventListener('click',async (e)=>{
   const name = (Name.textContent.trim() !== 'USER NAME')? Name.textContent.trim() : false;
   const regNm =  (RegNM.textContent.trim() !== 'USER_REG NUMBER') ? RegNM.textContent.trim() : false;
   const department = (Department.textContent.trim() !== 'Department') ? Department.textContent.trim() : false;
-  let cours = (currentCourseDisplay.textContent.trim() !== 'No class') ? currentCourseDisplay.textContent.trim() : false;
+  const cours = (currentCourseDisplay.textContent.trim() !== 'No class') ? currentCourseDisplay.textContent.trim() : false;
   
   if(!name || !regNm || !department || !cours) return alert('All ADEX field must be filled!');
 
@@ -484,17 +420,12 @@ markBt.addEventListener('click',async (e)=>{
   }
   */
   spinnerContainer.style.display = 'block';
-  const date = getFormattedDate();
-  const docm = doc(db,'Portal',course);
+  const date = getCurrentDate();
+  
   //check internet connection...
   try{
     const internet = await isReallyOnline();
-    if(internet){
-      const output = await verifyStudentsPortal(docm,course,date);
-      await markPortal(output,name,regNm,department,course);
-      spinnerContainer.style.display = 'none';
-      return;
-    } 
+    if(internet) return await markAttendance(name,regNm,department,course,date);
     
     spinnerContainer.style.display = 'none';
     syncAttendanceData(name,regNm,department,course,date);
@@ -625,4 +556,4 @@ function trySyncStoredAttendance(db, interval) {
       console.error("Failed to read from IndexedDB during sync.");
     };
   });
-  }
+}
