@@ -426,7 +426,7 @@ async function verifyStudentsPortal(docm,course,date){
     if(student < output.startTime){
       return {state : false};
     }
-    if(student > output.startTime && student < output.endTime){
+    if(student > output.startTime || student < output.endTime){
       return { state : true };
     }
     if(student > output.endTime){
@@ -438,7 +438,8 @@ async function verifyStudentsPortal(docm,course,date){
   }
 }
 
-async function markPortal(output,name,regNm,department,course,date){
+async function markPortal(output,name,regNm,department,course){
+  const date = getCurrentDate();
   try{
     switch(output.state){
       case false :
@@ -483,15 +484,14 @@ markBt.addEventListener('click',async (e)=>{
   }
   */
   spinnerContainer.style.display = 'block';
-  const dateSlash = getFormattedDate();
-  const date = getCurrentDate(); 
+  const date = getFormattedDate();
   const docm = doc(db,'Portal',course);
   //check internet connection...
   try{
     const internet = await isReallyOnline();
     if(internet){
-      const output = await verifyStudentsPortal(docm,course,dateSlash);
-      await markPortal(output,name,regNm,department,course,date);
+      const output = await verifyStudentsPortal(docm,course,date);
+      await markPortal(output,name,regNm,department,course);
       spinnerContainer.style.display = 'none';
       return;
     } 
@@ -625,4 +625,4 @@ function trySyncStoredAttendance(db, interval) {
       console.error("Failed to read from IndexedDB during sync.");
     };
   });
-}
+  }
