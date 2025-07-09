@@ -1,336 +1,280 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ADEX - Create Account</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#007bff" />
-  <link rel="icon" href="icon-192.png" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Create Account - ADEX</title>
   <style>
-  /* Reset & base */
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0;
+    * {
+      user-select: none;
+      margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #007f5f, white);
+      background: linear-gradient(to bottom, #021a14, #0a3c2a, #048d6b);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      min-height: 100vh; /* dark green */
-  }
-
-  .container {
-    max-width: 400px;
-    margin: 50px auto;
-    background: white;
-    padding: 30px 25px 40px 25px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 100, 0, 0.1);
-    position: relative;
-    width: 90%;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  }
-  h1{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: white; /* medium green */
-    margin-bottom: 5px;
-    font-size: 35px;
-    font-weight: 700;
-    border: 2px solid white;
-    border-radius: 10px;
-    padding: 10px 40px;
-  }
-  h2 {
-    text-align: center;
-    color: #007f5f; /* medium green */
-    margin-bottom: 30px;
-    font-weight: 700;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-
-  input[type="text"],
-  #department,
-  input[type="email"],
-  input[type="password"] {
-    padding: 12px 15px;
-    margin-bottom: 18px;
-    border: 2px solid #007f5f; /* light green border */
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
-  }
-
-  input[type="text"]:focus,
-  #department,
-  input[type="email"]:focus,
-  input[type="password"]:focus {
-    border-color: #007f5f; /* bright green */
-    outline: none;
-    background: #f0fff0;
-  }
-
-  button {
-    background: #007f5f; /* bright green */
-    color: white;
-    padding: 14px 0;
-    border: none;
-    border-radius: 8px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.25s ease;
-  }
-
-  button:hover {
-    background: #007f5f; /* darker green */
-  }
-
-  /* Status message styling */
-  #statusMessage {
-    position: fixed;
-    top: -100%;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: black;
-    border-radius: 10px;
-    font-weight: 600;
-    width: 60%;
-    min-height: 40px;
-    height: auto;
-    z-index: 20;
-    transition-duration: 1s;
-    padding: 5px 2px;
-  }
-
-  /* Spinner container & spinner */
-  .spinner-container{
-    display: none; /* Hidden by default, show when needed */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    backdrop-filter: blur(15px);
-    border-radius: 12px;
-    padding: 25px 30px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-  }
-  .spinner-container1{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    backdrop-filter: blur(15px);
-    border-radius: 12px;
-    padding: 25px 30px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    transform: translate(-50%, -50%); 
-    display: none;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 60%;
-    gap: 7px;
-  }
-  .spinner,#spin {
-    width: 48px;
-    height: 48px;
-    border: 6px solid #06614a; /* light green */
-    border-top-color: white; /* yellow */
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-  }
-  #spin{
-    width: 28px;
-    height: 28px;
-    border: 3px solid #04ad60;
-    border-top-color: white;
-    margin: 0;
-    padding: 0;
-  }
-  .footer {
-    text-align: center;
-    margin-top: 1rem;
-    font-size: 14px;
-  }
-
-  .footer a {
-    color: #f0b400; /* Yellow */
-    text-decoration: none;
-    font-weight: bold;
-  }
-
-  .footer a:hover {
-    text-decoration: underline;
-  }
-  .password-container {
-      position: relative;
+      gap: 110px;
+      padding-top: 20px;
+      color: #ffffff;
     }
-    input[type="password"],
-    input[type="text"] {
+
+    .title {
+      width: 90%;
+      max-width: 400px;
+      padding: 18px;
+      background: #ffffff;
+      color: #048d6b;
+      font-size: 2.4em;
+      font-weight: 800;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .container {
+      width: 90%;
+      max-width: 550px;
+      background: #121212;
+      border-radius: 18px;
+      padding: 30px 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 35px;
+      border: 2px solid #87fcdf;
+      box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+    }
+
+    .container h2 {
+      font-size: 2em;
+      font-weight: 700;
+      color: #87fcdf;
+      text-shadow: 0 0 8px #048d6b;
+    }
+
+    .img-div {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid #87fcdf;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .img-div img {
       width: 100%;
-      padding: 10px 40px 10px 10px;
-      font-size: 16px;
+      height: 100%;
+      object-fit: cover;
     }
-    .toggle-icon {
-      position: absolute;
-      top: 38%;
-      right: 10px;
-      transform: translateY(-50%);
+
+    .acct-but {
+      margin-top: 10px;
+      width: 80%;
+      padding: 12px 0;
+      font-size: 1.3em;
+      font-weight: bold;
+      background: linear-gradient(90deg, #048d6b, #87fcdf, #048d6b);
+      background-size: 300% 100%;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+      animation: button 4s linear infinite;
       cursor: pointer;
-      color: #555;
     }
-  
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
+
+    .acct-but:hover {
+      transform: translateY(-4px);
     }
-  }
-</style>
+
+    @keyframes button {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #spinner {
+      display: none;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      backdrop-filter: blur(10px);
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 20px 10px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      z-index: 100;
+      width: 300px;
+      height: 70px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #87fcdf;
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .navigator {
+      font-size: 1em;
+      font-weight: bold;
+      color: #87fcdf;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .footer a {
+      text-decoration: none;
+      color: #87fcdf;
+      font-weight: bold;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>ADEX</h1>
+  <h2 class="title">ADEX</h2>
   <div class="container">
-    <h2>Create Account</h2>
-    <form id="signupForm">
-      <input type="text" id="name" placeholder="Full Name" required />
-      <input type="text" id="regNumber" placeholder="Reg Number FT/DP/NMB" required />
-      <select id="department">
-        <option>ACES</option>
-        <option>GEOLOGY</option>
-        <option>MECHANICAL_ENGINEERING</option>
-        <option>ELECTRICAL_ENGINEERING</option>
-      </select>
-      <input type="text" id="level" placeholder="Level" required />
-      <input type="email" id="email" placeholder="Email" required />
-      <div class="password-container">
-        <input type="password" id="password" placeholder="Enter password" required>
-        <span class="toggle-icon" id="togglePassword">
-        <!-- Eye SVG (visible) -->
-          <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#555" height="20" width="20"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.75-7.5 9.75-7.5S21.75 12 21.75 12s-3.75 7.5-9.75 7.5S2.25 12 2.25 12z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-          <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#555" height="20" width="20"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223a9.77 9.77 0 00-1.723 3.777C4.5 16.5 8.25 20.25 12 20.25c1.325 0 2.59-.297 3.742-.83M6.808 6.808A9.712 9.712 0 0112 3.75c3.75 0 7.5 3.75 9.75 8.25a9.713 9.713 0 01-1.272 2.104M6.808 6.808L3 3m3.808 3.808l12.384 12.384M12 15a3 3 0 100-6 3 3 0 000 6z" />
-          </svg>
-        </span>
-      </div>
-      
-      <button type="submit">Create Account</button><br />
-      <div class="footer">
-        Already have an account? <a href="ADEXlogin.html">Log in</a>
-      </div>
-    </form>
-    <p id="statusMessage"></p>
-    <div class="spinner-container" id="spinner">
+    <div class="img-div">
+      <img src="AdexImg.jpg" alt="ADEX">
+    </div>
+    <h2>Welcome to ADEX</h2>
+    <button class="acct-but">Create Account</button>
+  </div>
+  <div class="footer">
+    Already have an account? <a href="ADEXlogin.html">Log in</a>
+  </div>
+  div
+  
+  <div id="spinner">
+    <div class="spinner-container" >
       <div class="spinner"></div>
     </div>
+    <p class="navigator">Loading...</p>
   </div>
-  <div class="spinner-container1">
-    <div id="spin"></div>Logging in user
-  </div>
-
-  <!-- Firebase and app logic -->
-    <!-- Install Button -->
-  <button id="installButton" style="display: none; position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-    Install ADEX
-  </button>
-  <!-- verifying email -->
-  <script>
-   /* const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get("verified") === "true") {
-      console.log("Redirected from email verification.");
-      alert("Your email was successfully verified. You can now create your account or log in.");
-    }*/
-  </script>
   
-  <script type="module" src="firebaseConfig.js"></script>
-  <script type="module" src="ADEXsign.js"></script>
-  <script>
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(reg => console.log('Service Worker registered:', reg.scope))
-        .catch(err => console.error('Service Worker registration failed:', err));
+  <script type="module">
+    import { auth, db } from './firebaseConfig.js';
+    import { getDocs, collection } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+    import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
+
+    const spin = document.getElementById('spinner');
+    const navig = document.querySelector('.navigator');
+    const createBut = document.querySelector('.acct-but');
+
+    function showSpinner(message) {
+      navig.textContent = message;
+      spin.style.display = 'flex';
     }
 
-    // Handle PWA installation
-    let deferredPrompt;
-    const installButton = document.getElementById('installButton');
+    function hideSpinner() {
+      spin.style.display = 'none';
+    }
+    
+    function storeUser(userObj) {
+      const request = indexedDB.open('adexusers', 1);
+      request.onupgradeneeded = function (e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('users')) {
+          db.createObjectStore('users');
+        }
+      };
+      request.onsuccess = function (e) {
+        const db = e.target.result;
+        const tx = db.transaction('users', 'readwrite');
+        const store = tx.objectStore('users');
+        const addUser = store.put(userObj, 'currentUser');
+        addUser.onsuccess = () => {
+          console.log('User saved in IndexedDB');
+          setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
+        };
+      };
+    }
 
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installButton.style.display = 'block';
-    });
+    async function checkUserEmailPresent(user) {
+      const email = user.email;
+      const levels = ['100', '200', '300', '400', '500'];
+      const departments = ['COMPUTER_ENGINEERING', 'MECHANICAL_ENGINEERING', 'ELECTRICAL_ENGINEERING', 'PETROLEUM_ENGINEERING'];
 
-    installButton.addEventListener('click', () => {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-          } else {
-            console.log('User dismissed the install prompt');
+      for (const level of levels) {
+        for (const dept of departments) {
+          const ref = collection(db, `user_${level}`, 'department', dept);
+          try {
+            const snapshot = await getDocs(ref);
+            const found = snapshot.docs.find(doc => doc.data().email === email);
+            if (found) return { exists: true, data: found.data() };
+          } catch (err) {
+            console.error('Error checking user:', err.message);
           }
-          deferredPrompt = null;
-          installButton.style.display = 'none';
-        });
+        }
       }
-    });
-
-    // Optionally, hide the install button if the app is already installed
-    window.addEventListener('appinstalled', () => {
-      console.log('PWA was installed');
-      installButton.style.display = 'none';
-    });
-  </script>
-  <!-- Service Worker -->
-  <script>
-   /* if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then((registrations) => {
-        Promise.all(
-          registrations.map((reg) => reg.unregister().then(() => {
-            console.log('✅ Service worker unregistered');
-          }))
-        ).then(() => {
-          console.log('🎉 All service workers removed');
-        });
-      });
-
-      if (window.caches) {
-        caches.keys().then((names) => {
-          Promise.all(
-            names.map((name) =>
-              caches.delete(name).then(() => {
-                console.log(`🗑️ Cache ${name} deleted`);
-              })
-            )
-          ).then(() => {
-            console.log('🎉 All caches deleted');
-          });
-        });
-      }
+      return { exists: false };
     }
-    /*if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./service-worker.js')
-        .then(reg => console.log('Service Worker registered:', reg.scope))
-        .catch(err => console.error('Service Worker failed:', err));
-    }*/
+
+    createBut.addEventListener('click', async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        showSpinner('Verifying account...');
+
+        const check = await checkUserEmailPresent(user);
+        hideSpinner();
+
+        if (check.exists) {
+          storeUser(check.data);
+        } else {
+          alert('Sign in successful. Please complete your registration.');
+          window.location.href = 'ADEXsign.html';
+        }
+      } catch (err) {
+        hideSpinner();
+        if (err.code === 'auth/popup-closed-by-user') {
+          alert("You closed the popup. Try again.");
+        } else {
+          alert("Error: " + err.message);
+        }
+      }
+    });
+    
+    // Auto-login if already in IndexedDB
+    function autoLoginIfStored() {
+      const request = indexedDB.open('adexusers', 1);
+      request.onsuccess = function (e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('users')) return;
+        const tx = db.transaction('users', 'readonly');
+        const store = tx.objectStore('users');
+        const getUser = store.get('currentUser');
+
+        getUser.onsuccess = () => {
+          if (getUser.result) {
+            showSpinner(`${getUser.result.name || 'User'} logging in...`);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
+          }
+        };
+      };
+    }
+
+    autoLoginIfStored();
   </script>
 </body>
 </html>
-
