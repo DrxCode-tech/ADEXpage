@@ -10,9 +10,9 @@ import {
 // DOM elements
 const loginButton = document.getElementById('loginForm');
 const RegNM = document.getElementById('regNm');
-const Department = document.getElementById('department');
+//const Department = document.getElementById('department');
 const Email = document.getElementById('email');
-const Password = document.getElementById('passwordInput');
+//const Password = document.getElementById('passwordInput');
 const spin = document.querySelector('.spinner-container');
 const messager = document.querySelector('.messager');
 
@@ -28,7 +28,7 @@ function statusDisplay(state, txt) {
   }, 5000);
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
+/*document.addEventListener('DOMContentLoaded',()=>{
   const passwordInput = document.getElementById('passwordInput');
   const togglePassword = document.getElementById('togglePassword');
   const eyeOpen = document.getElementById('eyeOpen');
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     eyeOpen.style.display = isHidden ? 'inline' : 'none';
     eyeClosed.style.display = isHidden ? 'none' : 'inline';
   });
-})
+})*/
 
 // Format reg number
 function standardizeRegNumber(regNumber) {
@@ -78,24 +78,26 @@ function standardizeRegNumber(regNumber) {
 }*/
 
 // Correct user lookup
-async function findUserInFirestore(uid, dept) {
+async function findUserInFirestore(email, regNm) {
   const levels = ['user_100', 'user_200', 'user_300', 'user_400', 'user_500'];
+  const department = ['COMPUTER_ENGINEERING','MECHANICAL_ENGINEERING','ELECTRICAL_ENGINEERING','PETROLEUM_ENGINEERING'];
 
-  for (const level of levels) {
-    try {
-      const q = collection(db, level, 'department', dept);
-      const snapshot = await getDocs(q);
-      for (const docSnap of snapshot.docs) {
-        const data = docSnap.data();
-        if (data.uid === uid) {
-          return { ...data, level, Dept: dept };
+  for(const level of levels){
+    for(const dept of department){
+      const collect = collection(db,level,'department',dept);
+      try{
+        const user = await getDocs(collect);
+        const person = user.docs.find(use=>(
+          use.data().email === email && use.data().regNm === regNm
+        ))
+        if(person){
+          return person.data();
         }
+      }catch(err){
+        console.error('error finding user',err.message);
       }
-    } catch (err) {
-      statusDisplay(false, `Error checking ${level}: ${err.message}`);
     }
   }
-
   return false;
 }
 
@@ -153,21 +155,19 @@ loginButton.addEventListener('submit', async (e) => {
   if(!connection) return statusDisplay(false,'You don\'t have an internet connection!');
   
   spin.style.display = 'block';
-  const department = Department.value.trim();
+  //const department = Department.value.trim();
   const regNm = standardizeRegNumber(RegNM.value.trim());
   const email = Email.value.trim();
-  const password = Password.value.trim();
+  //const password = Password.value.trim();
 
-  if (!regNm || !department || !email || !password) {
+  if (!regNm || !email) {
     spin.style.display = 'none';
     return statusDisplay(false, "All fields are required.");
   }
 
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
 
-    const userData = await findUserInFirestore(user.uid, department);
+    const userData = await findUserInFirestore(email, regNm);
 
     if (!userData) {
       spin.style.display = 'none';
