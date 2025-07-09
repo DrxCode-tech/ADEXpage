@@ -724,6 +724,7 @@ async function verifyOnline(callback){
     );
     if(!userSnapData){
       return alert('pls check INTERNET connection and reload app.If error presist then your account is not found on our database an this may result to issues...pls resolve to contact ADEX');
+      clearInterval(callback);
     } 
     const { lockState,lockStateTime,lockStateDate } = userSnapData.data().stdObj;
     if(lockState === 0){
