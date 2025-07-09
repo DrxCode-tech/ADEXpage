@@ -80,7 +80,7 @@ function standardizeRegNumber(regNumber) {
 // Correct user lookup
 async function findUserInFirestore(email, regNm) {
   const levels = ['user_100', 'user_200', 'user_300', 'user_400', 'user_500'];
-  const department = ['COMPUTER_ENGINEERING','MECHANICAL_ENGINEERING','ELECTRICAL_ENGINEERING','PETROLEUM_ENGINEERING'];
+  const department = ['ACES','COMPUTER_ENGINEERING','MECHANICAL_ENGINEERING','ELECTRICAL_ENGINEERING','PETROLEUM_ENGINEERING'];
 
   for(const level of levels){
     for(const dept of department){
