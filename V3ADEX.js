@@ -716,6 +716,7 @@ async function verifyOnline(callback){
   
   let level = stdUser.level;
   let dept = stdUser.dept;
+  alert(level+" "+dept);
   const cllct = collection(db,`user_${level}`,'department',dept);
   try{
     const userSnap = await getDocs(cllct);
