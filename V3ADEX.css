@@ -152,9 +152,12 @@ html,body{
 }
 
 .content .canvas-span{
-  color: blue;
+  color: white;
   margin: 0;
   padding: 0;
+  padding: 5px;
+  border-radius: 5px;
+  background: darkgreen;
 }
 
 .content .clear-canvas{
