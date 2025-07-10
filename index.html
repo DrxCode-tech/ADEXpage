@@ -189,7 +189,7 @@
     }
     
     function storeUser(userObj) {
-      const request = indexedDB.open('adusers', 1);
+      const request = indexedDB.open('adexusers', 1);
       request.onupgradeneeded = function (e) {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('users')) {
@@ -203,7 +203,6 @@
         const addUser = store.put(userObj, 'currentUser');
         addUser.onsuccess = () => {
           console.log('User saved in IndexedDB');
-          alert('db made successful ');
           setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
         };
       };
@@ -259,7 +258,7 @@
     
     // Auto-login if already in IndexedDB
     function autoLoginIfStored() {
-      const request = indexedDB.open('adusers', 1);
+      const request = indexedDB.open('adexusers', 1);
       request.onsuccess = function (e) {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('users')) return;
