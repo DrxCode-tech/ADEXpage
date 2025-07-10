@@ -716,7 +716,6 @@ async function verifyOnline(callback){
   
   let level = stdUser.level;
   let dept = stdUser.dept;
-  alert(level+" "+dept);
   const cllct = collection(db,`user_${level}`,'department',dept);
   try{
     const userSnap = await getDocs(cllct);
@@ -724,8 +723,9 @@ async function verifyOnline(callback){
       std.data().email === stdUser.email && std.data().regNm === stdUser.regNm
     );
     if(!userSnapData){
-      return alert('pls check INTERNET connection and reload app.If error presist then your account is not found on our database an this may result to issues...pls resolve to contact ADEX');
+      alert('pls check INTERNET connection and reload app.If error presist then your account is not found on our database an this may result to issues...pls resolve to contact ADEX');
       clearInterval(callback);
+      return;
     } 
     const { lockState,lockStateTime,lockStateDate } = userSnapData.data().stdObj;
     if(lockState === 0){
