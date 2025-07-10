@@ -164,13 +164,19 @@ html,body{
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: orange;
-  width: 30%;
-  height: 25px;
-  padding: 10px 5px;
-  border-radius: 7px;
+  background-color: white;
+  width: auto;
+  height: auto;
+  padding: 15px 7px;
+  border: 1px solid lightgray;
+  border-radius: 10px;
   font-size: 17px;
   font-weight: 600;
+}
+.content .clear-canvas:hover{
+  background-color: gray;
+  border: 1px solid white;
+  color:white;
 }
 
 .content .mark{
