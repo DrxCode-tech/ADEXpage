@@ -189,7 +189,7 @@
     }
     
     function storeUser(userObj) {
-      const request = indexedDB.open('adexusers', 1);
+      const request = indexedDB.open('adusers', 1);
       request.onupgradeneeded = function (e) {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('users')) {
@@ -203,6 +203,7 @@
         const addUser = store.put(userObj, 'currentUser');
         addUser.onsuccess = () => {
           console.log('User saved in IndexedDB');
+          alert('db made successful ');
           setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
         };
       };
@@ -211,7 +212,7 @@
     async function checkUserEmailPresent(user) {
       const email = user.email;
       const levels = ['100', '200', '300', '400', '500'];
-      const departments = ['COMPUTER_ENGINEERING', 'MECHANICAL_ENGINEERING', 'ELECTRICAL_ENGINEERING', 'PETROLEUM_ENGINEERING'];
+      const departments = ['ACES','COMPUTER_ENGINEERING', 'MECHANICAL_ENGINEERING', 'ELECTRICAL_ENGINEERING', 'PETROLEUM_ENGINEERING'];
 
       for (const level of levels) {
         for (const dept of departments) {
@@ -222,6 +223,7 @@
             if (found) return { exists: true, data: found.data() };
           } catch (err) {
             console.error('Error checking user:', err.message);
+            alert(err.message);
           }
         }
       }
@@ -257,7 +259,7 @@
     
     // Auto-login if already in IndexedDB
     function autoLoginIfStored() {
-      const request = indexedDB.open('adexusers', 1);
+      const request = indexedDB.open('adusers', 1);
       request.onsuccess = function (e) {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('users')) return;
