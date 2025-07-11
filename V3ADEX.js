@@ -694,7 +694,7 @@ function verifyOffline(db, callback,callback2) {
     }
 
     let currentTime = getTimeInSecs();
-    const diff = (parseInt(currentTime) - parseInt(lockStateTime)) / 60;
+    const diff = (parseInt(currentTime) - parseInt(lockStateTime)) / 1800;
 
     if (diff >= 1) {
       updateWarnDB(db);
@@ -741,7 +741,7 @@ async function verifyOnline(callback){
       return clearInterval(callback);
     }
     let currentTime = getTimeInSecs();
-    const diff = (parseInt(currentTime) - parseInt(lockStateTime))/60;
+    const diff = (parseInt(currentTime) - parseInt(lockStateTime))/1800;
     if(diff >= 1){
       await updateWarnDBOnline();
       return clearInterval(callback);
