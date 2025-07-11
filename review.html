@@ -24,6 +24,7 @@
         background: #111;
         display: grid;
         grid-template-areas:
+          'review'
           'head'
           'cont'
           'btn';
@@ -242,10 +243,53 @@
         font-size: 1.2em;
         font-weight: 600;
       }
+      
+      .reviewHead{
+        color: white;
+        grid-area: review;
+      }
+      .star{
+        background: black;
+        padding: 5px;
+        border-radius: 7px;
+      }
     </style>
   </head>
   <body>
     <div class="profile">
+      <div class="reviewHead">
+        <h2>REVIEW</h2>
+        <div class="star">
+          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD700" stop-opacity="1" /><stop offset="100%" stop-color="#FFD700" stop-opacity="0" /></radialGradient></defs>
+          <!-- Glowing background -->
+          <circle cx="32" cy="32" r="24" fill="url(#glow)" />
+          <!-- Star icon -->
+          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z" fill="#FFD700" stroke="#FFC107" stroke-width="2" />
+          </svg>
+          
+          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD700" stop-opacity="1" /><stop offset="100%" stop-color="#FFD700" stop-opacity="0" /></radialGradient></defs>
+          <!-- Glowing background -->
+          <circle cx="32" cy="32" r="24" fill="url(#glow)" />
+          <!-- Star icon -->
+          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z" fill="#FFD700" stroke="#FFC107" stroke-width="2" />
+          </svg>
+          
+          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD700" stop-opacity="1" /><stop offset="100%" stop-color="#FFD700" stop-opacity="0" /></radialGradient></defs>
+          <!-- Glowing background -->
+          <circle cx="32" cy="32" r="24" fill="url(#glow)" />
+          <!-- Star icon -->
+          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z" fill="#FFD700" stroke="#FFC107" stroke-width="2" />
+          </svg>
+          
+          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD700" stop-opacity="1" /><stop offset="100%" stop-color="#FFD700" stop-opacity="0" /></radialGradient></defs>
+          <!-- Glowing background -->
+          <circle cx="32" cy="32" r="24" fill="url(#glow)" />
+          <!-- Star icon -->
+          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z" fill="#FFD700" stroke="#FFC107" stroke-width="2" />
+          </svg>
+        </div>
+        <p>What DON'T you like about ADEX</p>
+      </div>
       <div class="heading">ADEX</div>
       <div class="content">
         <p class="name">DanniPa Ani</p>
@@ -270,4 +314,3 @@
     <script type="module" src="review.js"></script>
   </body>
 </html>
-
