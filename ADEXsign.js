@@ -112,7 +112,7 @@ function checkLevel(value) {
 
 // Checking if user exists on DB
 async function checkUser(level,email, dept,regNm) {
-  const reg = regNm.replace('/','');
+  const reg = regNm.replace('/','_');
   const docm = doc(db,'UNIUYO',level,dept,reg);
   const snapUserData = await getDoc(docm);
   if(snapUserData.exists()){
@@ -123,7 +123,7 @@ async function checkUser(level,email, dept,regNm) {
 }
 
 async function verifyAndOpen(email,regNm,level,dept){
-  const reg = regNm.replace('/','');
+  const reg = regNm.replace('/','_');
   const docm = doc(db,'UNIUYO',level,dept,reg);
   try{
     const snapUserData = await getDoc(docm);
@@ -173,7 +173,7 @@ async function createUserAcct(user,name,regNm,email,dept,level){
       lockStateDate:'',
     }
   };
-  const reg = regNm.replace('/','');
+  const reg = regNm.replace('/','_');
   try{
     const docm = doc(db,'UNIUYO',level,dept,reg);
     const emailDocm = doc(db,'EmailIndex',level,email,reg);
@@ -246,5 +246,10 @@ signUpButton.addEventListener('submit', async (e) => {
     return;
   }
 
-  await signUpUser(result,name, email, levelInput, department, regNm);
+  try{
+    await signUpUser(result,name, email, levelInput, department, regNm);
+     }catch(err){
+    statusDisplay(false, `${err}`);
+  }
+  
 })
