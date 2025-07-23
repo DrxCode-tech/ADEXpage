@@ -96,7 +96,7 @@
       transform: translateY(-4px);
     }
 
-    @keyframes button {
+    @keyframes b;utton {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
@@ -161,6 +161,7 @@
   <div class="footer">
     Already have an account? <a href="ADEXlogin.html">Log in</a>
   </div>
+  div
   
   <div id="spinner">
     <div class="spinner-container" >
@@ -188,7 +189,7 @@
     }
     
     function storeUser(userObj) {
-      const request = indexedDB.open('adexusers', 1);
+      const request = indexedDB.open('adexUsers', 1);
       request.onupgradeneeded = function (e) {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('users')) {
@@ -208,21 +209,18 @@
     }
 
     async function checkUserEmailPresent(user) {
-      const email = user.email;
+      const email = user.email.toLowerCase();
       const levels = ['100', '200', '300', '400', '500'];
-      const departments = ['ACES','COMPUTER_ENGINEERING', 'MECHANICAL_ENGINEERING', 'ELECTRICAL_ENGINEERING', 'PETROLEUM_ENGINEERING'];
 
       for (const level of levels) {
-        for (const dept of departments) {
-          const ref = collection(db, `user_${level}`, 'department', dept);
-          try {
-            const snapshot = await getDocs(ref);
-            const found = snapshot.docs.find(doc => doc.data().email === email);
-            if (found) return { exists: true, data: found.data() };
-          } catch (err) {
-            console.error('Error checking user:', err.message);
-            alert(err.message);
-          }
+        const ref = collection(db,'EmailIndex',level,email);
+        try {
+          const snapshot = await getDocs(ref);
+          const found = snapshot.docs.find(doc => doc.data().email === email);
+          if (found) return { exists: true, data: found.data() };
+        } catch (err) {
+          console.error('Error checking user:', err.message);
+          alert(err.message);
         }
       }
       return { exists: false };
@@ -257,7 +255,7 @@
     
     // Auto-login if already in IndexedDB
     function autoLoginIfStored() {
-      const request = indexedDB.open('adexusers', 1);
+      const request = indexedDB.open('adexUsers', 1);
       request.onsuccess = function (e) {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('users')) return;
@@ -277,4 +275,4 @@
     //autoLoginIfStored();
   </script>
 </body>
-</html>
+  </html>
