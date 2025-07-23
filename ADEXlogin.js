@@ -1,7 +1,7 @@
 import { db, auth } from "./firebaseConfig.js";
 import {
-  collection,
-  getDocs
+  getDoc,
+  doc,
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import {
   signInWithEmailAndPassword
@@ -79,30 +79,24 @@ function standardizeRegNumber(regNumber) {
 
 // Correct user lookup
 async function findUserInFirestore(email, regNm) {
-  const levels = ['user_100', 'user_200', 'user_300', 'user_400', 'user_500'];
-  const department = ['ACES','COMPUTER_ENGINEERING','MECHANICAL_ENGINEERING','ELECTRICAL_ENGINEERING','PETROLEUM_ENGINEERING'];
-
+  const levels = ['100', '200', '300', '400', '500'];
+  const reg = regNm.replace('/','_');
   for(const level of levels){
-    for(const dept of department){
-      const collect = collection(db,level,'department',dept);
-      try{
-        const user = await getDocs(collect);
-        const person = user.docs.find(use=>(
-          use.data().email === email && use.data().regNm === regNm
-        ))
-        if(person){
-          return person.data();
-        }
-      }catch(err){
-        console.error('error finding user',err.message);
+    const docm = doc(db,'EmailIndex',level,email,reg);
+    try{
+      const user = await getDoc(docm);
+      if(user.exists()){
+        return user.data();
       }
+    }catch(err){
+      console.error('error finding user',err.message);
     }
   }
   return false;
 }
 
 function clearUserData() {
-  const request = indexedDB.open('adexusers', 1);
+  const request = indexedDB.open('adexUsers', 1);
   request.onsuccess = function (event) {
     const db = event.target.result;
     if (db.objectStoreNames.contains('users')) {
@@ -156,8 +150,8 @@ loginButton.addEventListener('submit', async (e) => {
   
   spin.style.display = 'block';
   //const department = Department.value.trim();
-  const regNm = standardizeRegNumber(RegNM.value.trim());
-  const email = Email.value.trim();
+  const regNm = standardizeRegNumber(RegNM.value.trim().toUpperCase());
+  const email = Email.value.trim().toLowerCase();
   //const password = Password.value.trim();
 
   if (!regNm || !email) {
