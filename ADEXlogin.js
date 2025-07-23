@@ -80,7 +80,7 @@ function standardizeRegNumber(regNumber) {
 // Correct user lookup
 async function findUserInFirestore(email, regNm) {
   const levels = ['100', '200', '300', '400', '500'];
-  const reg = regNm.replace('/','_');
+  const reg = regNm.replace('/','-');
   for(const level of levels){
     const docm = doc(db,'EmailIndex',level,email,reg);
     try{
