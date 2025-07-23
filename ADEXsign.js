@@ -111,30 +111,25 @@ function checkLevel(value) {
 }
 
 // Checking if user exists on DB
-async function checkUser(level,email, dept) {
-  const collect = collection(db, `user_${level}`, 'department', dept);
-  const snapUserData = await getDocs(collect);
-  if(snapUserData.size > 0){
-    return snapUserData.docs.some(doc => {
-    const docm = doc.data();
-    return docm.email === email;
-    }); 
+async function checkUser(level,email, dept,regNm) {
+  const reg = regNm.replace('/','_');
+  const docm = doc(db,'UNIUYO',level,dept,reg);
+  const snapUserData = await getDoc(docm);
+  if(snapUserData.exists()){
+    return true;
   }else{
     console.error('no users found !');
   }
-  
 }
 
 async function verifyAndOpen(email,regNm,level,dept){
-  const collect = collection(db, `user_${level}`, 'department', dept);
+  const reg = regNm.replace('/','_');
+  const docm = doc(db,'UNIUYO',level,dept,reg);
   try{
-    const snapUserData = await getDocs(collect);
-    if(snapUserData.size > 0){
-      const docum = snapUserData.docs.find(doc=>{
-      return doc.data().email === email && standardizeRegNumber(doc.data().regNm) === regNm;
-      });
-      if (docum) {
-        const userDt = docum.data();
+    const snapUserData = await getDoc(docm);
+    if(!snapUserData.exists()){
+      const userDt = snapUserData.data()
+      if (userDt && userDt.email === email && userDt.regNm === regNm) {
         const newUser = {
           uid: userDt.uid,
           name: userDt.name,
@@ -142,15 +137,14 @@ async function verifyAndOpen(email,regNm,level,dept){
           email: userDt.email,
           dept: userDt.dept,
           date: userDt.date,
-          
         };
         storeUser(newUser);
         spinner.style.display = 'none';
         statusDisplay(true, `Welcome back ${newUser.name}!`);
         window.location.href = "V3ADEX.html";
       }else{
-        return statusDisplay(false,'invalide email or regNumber!');
         spinner.style.display = 'none';
+        return statusDisplay(false,'invalide email or regNumber!');
       }
     }else{
       console.error('Error no users! ',error.message );
@@ -173,12 +167,18 @@ async function createUserAcct(user,name,regNm,email,dept,level){
     email,
     dept,
     date: new Date().toISOString(),
-    
+    stdObj:{
+      lockState:0,
+      lockStateTime:0,
+      lockStateDate:'',
+    }
   };
-  
+  const reg = regNm.replace('/','_');
   try{
-    const collect = collection(db, `user_${level}`, 'department', dept);
-    await addDoc(collect, newUser);
+    const docm = doc(db,'UNIUYO',level,dept,reg);
+    const emailDocm = doc(db,'EmailIndex',level,email,reg);
+    await setDoc(docm, newUser);
+    await setDoc(emailDocm,newUser);
 
     storeUser(newUser);
     spinner.style.display = 'none';
@@ -238,7 +238,7 @@ signUpButton.addEventListener('submit', async (e) => {
 
   spinner.style.display = 'block';
   const result = await getCurrentUser();
-  const email = result.email;
+  const email = result.email.toLowerCase();
   // Check if user already exists
   const userPresence = await checkUser(levelInput,email ,department);
   if (userPresence) {
