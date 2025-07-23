@@ -247,7 +247,8 @@
         if (err.code === 'auth/popup-closed-by-user') {
           alert("You closed the popup. Try again.");
         } else {
-          alert("Error: " + err.message);
+          console.log('Error from create acct button click :',err.message);
+          alert("Oops your internet connection is bad");
         }
       }
     });
