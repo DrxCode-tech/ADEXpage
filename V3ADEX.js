@@ -421,7 +421,7 @@ async function markAttendance(name, regNm, dept, course, date) {
     name,
     regNm,
   };
-  const reg = regNm.replace('/','-');
+  const reg = regNm.replace(/\//g,'-');
   alert(reg);
   const docRef = doc(db,course,date,dept,reg);
   const DeptPath = doc(db,course,date,'DP','deptList');
@@ -560,7 +560,7 @@ async function updateWarnDBOnline() {
   const regNm = stdUser.regNm;
 
   console.log(stdUser);
-  const reg = regNm.replace('/','-');
+  const reg = regNm.replace(/\//g,'-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
 
   isReallyOnline().then(async (online) => {
@@ -732,7 +732,7 @@ async function verifyOnline(callback){
   let level = stdUser.level;
   let dept = stdUser.dept;
   let regNm = stdUser.regNm;
-  const reg = regNm.replace('/','-');
+  const reg = regNm.replace(/\//g,'-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
   try{
     const userSnapData = await getDoc(docm);
