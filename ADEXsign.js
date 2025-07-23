@@ -111,24 +111,26 @@ function checkLevel(value) {
 }
 
 // Checking if user exists on DB
-async function checkUser(level,email, dept,regNm) {
-  const reg = regNm.replace('/','_');
-  const docm = doc(db,'UNIUYO',level,dept,reg);
-  const snapUserData = await getDoc(docm);
-  if(snapUserData.exists()){
-    return true;
-  }else{
-    console.error('no users found !');
+async function checkUser(level, email, dept, regNm) {
+  const reg = regNm.replace('/', '_');
+  const docm = doc(db, 'UNIUYO', level, dept, reg);
+  try {
+    const snapUserData = await getDoc(docm);
+    return snapUserData.exists();
+  } catch (err) {
+    console.error('Error checking user:', err.message);
+    return false;
   }
 }
 
-async function verifyAndOpen(email,regNm,level,dept){
-  const reg = regNm.replace('/','_');
-  const docm = doc(db,'UNIUYO',level,dept,reg);
-  try{
+async function verifyAndOpen(email, regNm, level, dept) {
+  const reg = regNm.replace('/', '_');
+  const docm = doc(db, 'UNIUYO', level, dept, reg);
+
+  try {
     const snapUserData = await getDoc(docm);
-    if(!snapUserData.exists()){
-      const userDt = snapUserData.data()
+    if (snapUserData.exists()) {
+      const userDt = snapUserData.data();
       if (userDt && userDt.email === email && userDt.regNm === regNm) {
         const newUser = {
           uid: userDt.uid,
@@ -142,16 +144,16 @@ async function verifyAndOpen(email,regNm,level,dept){
         spinner.style.display = 'none';
         statusDisplay(true, `Welcome back ${newUser.name}!`);
         window.location.href = "V3ADEX.html";
-      }else{
+      } else {
         spinner.style.display = 'none';
-        return statusDisplay(false,'invalide email or regNumber!');
+        return statusDisplay(false, 'Invalid email or regNumber!');
       }
-    }else{
-      console.error('Error no users! ',error.message );
+    } else {
       spinner.style.display = 'none';
+      return statusDisplay(false, 'User not found.');
     }
-  }catch(err){
-    statusDisplay(false,'Pls, check your internet connectivety!');
+  } catch (err) {
+    statusDisplay(false, 'Please check your internet connectivity!');
     spinner.style.display = 'none';
   }
 }
@@ -240,7 +242,7 @@ signUpButton.addEventListener('submit', async (e) => {
   const result = await getCurrentUser();
   const email = result.email.toLowerCase();
   // Check if user already exists
-  const userPresence = await checkUser(levelInput,email ,department);
+  const userPresence = await checkUser(levelInput,email ,department,regNm);
   if (userPresence) {
     await verifyAndOpen(email,regNm, levelInput, department);
     return;
