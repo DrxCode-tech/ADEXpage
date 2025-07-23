@@ -17,7 +17,6 @@ import {
   increment,
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-const userRef = collection(db, "users");
 let stdUser;
 
 //initialization of inputs and display
@@ -118,7 +117,7 @@ function onLoadCheck() {
 
       const currentDate = new Date().toISOString().slice(0, 10);
       const currentTime = getTimeInSecs();
-      const diff = (parseInt(currentTime) - parseInt(lockStateTime)) / 60;
+      const diff = (parseInt(currentTime) - parseInt(lockStateTime)) / 1800;
 
       if (currentDate !== lockStateDate || diff >= 1) {
         updateWarnDB(DB);
@@ -203,15 +202,15 @@ window.addEventListener('DOMContentLoaded',async () => {
   const cancelStateButton = document.querySelector('.cancle');
   const sideBar = document.querySelector('.side-bar');
   cancelStateButton.addEventListener('click',()=>{
-    sideBar.style.width = !cancelState ? '100%' : '0%';
+    sideBar.style.width = !cancelState ? '50%' : '0%';
     cancelState = !cancelState;
   })
   document.querySelector('.bar').addEventListener('click',()=>{
-    sideBar.style.width = !cancelState ? '100%' : '0%';
+    sideBar.style.width = !cancelState ? '50%' : '0%';
     cancelState = !cancelState;
   })
   
-  const request = indexedDB.open('adexusers', 1);
+  const request = indexedDB.open('adexUsers', 1);
   
   request.onupgradeneeded = function (event) {
     const DB = event.target.result;
@@ -361,33 +360,38 @@ function checkAttendanceState() {
       clearInterval(interval);
   }
 }
-async function loadAttendane(){
-  let check = await isReallyOnline();
-  if(!check){
-    attView.classList.add('errorView')
-    return attView.innerHTML = 'You are currently offline';
+async function loadAttendance() {
+  const isOnline = await isReallyOnline();
+  if (!isOnline) {
+    attView.classList.add('errorView');
+    attView.innerHTML = 'You are currently offline';
+    return;
   }
-  const dept = Department.textContent;
-  const course = currentCourseDisplay.textContent;
-  if(course === 'No class') return attView.innerHTML = '<h3>No class yet!</h3>';
+
+  const dept = Department.textContent.trim();
+  const course = currentCourseDisplay.textContent.trim();
+  if (course === 'No class') {
+    attView.innerHTML = '<h3>No class yet!</h3>';
+    return;
+  }
+
   const date = getCurrentDate();
-  const CD = `${course}_${date}`;
-  
-  const docRef = doc(db,course,CD);
-  await onSnapshot(docRef,(snap)=>{
-    if(snap.exists()){
-      attView.innerHTML = '<h2>Students who mark</h2>';
-      const attendees = snap.data()[dept];
-      if(!attendees || attendees.length === 0) return attView.innerHTML = 'No student Mark yet!';
-      let users = '';
-      for(const student of attendees){
-        users += `<p>${student.name}  RegNo: ${student.regNm} just mark Attendance</p>`;
-      };
-      attView.innerHTML = users
-    }else{
+  const collectionRef = collection(db, course, date, dept); // db/course/date/dept
+
+  onSnapshot(collectionRef, (snapshot) => {
+    if (snapshot.empty) {
       attView.innerHTML = '<h3>No student marked yet</h3>';
+      return;
     }
-  })
+
+    attView.innerHTML = '<h2>Students who marked</h2>';
+    let users = '';
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      users += `<p>${data.name} RegNo: ${data.regNm} just mark Attendance</p>`;
+    });
+    attView.innerHTML += users;
+  });
 }
 let reviewSt = false;
 attReview.addEventListener('click',async ()=>{
@@ -401,18 +405,32 @@ let interval = setInterval(()=>{
   checkAttendanceState();
 },1000);
 //marking Attendance programmes
-async function markAttendance(name, reg, dept, course, date) {
-  const courseDate = `${course}_${date}`;
-  const docRef = doc(db, course, courseDate);
+async function updateDeptDate(dept,date){
+  const struc = doc(db,dept,date);
+  try{
+    await setDoc(struc,{
+      date:arrayUnion(date),
+    },{merge:true,});
+    console.log('successful merge date from updateDeptDate');
+  }catch(err){
+    console.error('Error from trying to update Department date: ',err);
+  }
+}
+async function markAttendance(name, regNm, dept, course, date) {
   const userObject = {
-    name: name,
-    regNm: reg,
+    name,
+    regNm,
   };
-
+  const reg = regNm.replace('/','_');
+  const docRef = doc(db,course,date,dept,reg);
+  const DeptPath = doc(db,course,date,'DP','deptList');
   try {
-    await setDoc(docRef, {
-      [dept]: arrayUnion(userObject)
-    }, { merge: true }); // ensures it creates or updates without overwriting other depts
+    await setDoc(DeptPath,{
+      deptName:arrayUnion(dept)
+    },{merge:true});
+    await setDoc(docRef,userObject); 
+    await updateDeptDate(dept,date);
+    // ensures it creates or updates without overwriting other depts
     spinnerContainer.style.display ='none';
     setTimeout(() => {
       statusDisplay(true, 'Attendance submitted successfully! Thank you for using ADEX');
@@ -424,7 +442,7 @@ async function markAttendance(name, reg, dept, course, date) {
       statusDisplay(true, 'Error marking Attendance, please check your network');
     }, 1000);
   
-    syncAttendanceData(name, reg, dept, course, date);
+    syncAttendanceData(name, regNm, dept, course, date);
   }
 }
 
@@ -484,20 +502,16 @@ async function getGeoLocsUI() {
 
 async function batchMarkAttendance(studentList, course, date) {
   const batch = writeBatch(db);
-  const CD = `${course}_${date}`;
-  const docRef = doc(db, course, CD);
 
   studentList.forEach(({ name, regNm, dept }) => {
     if (!name || !regNm || !dept) {
       console.warn("Skipping invalid student record:", { name, regNm, dept });
       return;
     }
-
+    const docRef = doc(db,course,date,dept,regNm);
     const userObject = { name, regNm };
 
-    batch.set(docRef, {
-      [dept]: arrayUnion(userObject)
-    }, { merge: true });
+    batch.set(docRef,userObject);
   });
 
   try {
@@ -539,32 +553,35 @@ function storeWarn(lockState,lockStateTime,lockStateDate){
   }
 }
 
-async function updateWarnDBOnline(){
+async function updateWarnDBOnline() {
   const level = stdUser.level;
   const dept = stdUser.dept;
+  const regNm = stdUser.regNm;
+
   console.log(stdUser);
-  const collect = collection(db, `user_${level}`, 'department', dept);
-  isReallyOnline().then(async (online)=>{
-    try{
-      if(online){
-        const stdDocs = await getDocs(collect);
-        const studentDoc = stdDocs.docs.find(docSnap =>
-          docSnap.data().email === stdUser.email &&
-          docSnap.data().regNm === stdUser.regNm
-        );
-        const studentRef = studentDoc.ref;
-        await updateDoc(studentRef, {
-          'stdObj.lockState': 0,
-          'stdObj.lockStateTime': 0,
-          'stdObj.lockStateDate': '',
-        });
-        enableMarkButton(true);
-        console.log('✅ Student lock state updated.Acct unlocked');
+  const reg = regNm.replace('/','_');
+  const docm = doc(db, 'UNIUYO', level, dept, reg);
+
+  isReallyOnline().then(async (online) => {
+    try {
+      if (online) {
+        const stdDoc = await getDoc(docm);
+        if (stdDoc.exists()) {
+          await updateDoc(docm, {
+            'stdObj.lockState': 0,
+            'stdObj.lockStateTime': 0,
+            'stdObj.lockStateDate': '',
+          });
+          enableMarkButton(true);
+          console.log('✅ Student lock state updated. Account unlocked');
+        } else {
+          console.warn('⚠️ Document does not exist.');
+        }
       }
-    }catch(err){
-      console.log('Error from checkDisability: failed to update online',err.message)
+    } catch (err) {
+      console.log('❌ Error updating lock state:', err.message);
     }
-  })
+  });
 }
 function updateWarnDB(DB){
   const lockObj = {
@@ -601,28 +618,25 @@ async function warning(student){
 async function warn(student) {
   const level = stdUser.level;
   const dept = stdUser.dept;
+  const regNm = stdUser.regNm;
   console.log(stdUser);
-  const collect = collection(db, `user_${level}`, 'department', dept);
+  const reg = regNm.replace('/','_');
+  const docm = doc(db, 'UNIUYO', level, dept, reg);
 
   try {
-    const stdDocs = await getDocs(collect);
-    const studentDoc = stdDocs.docs.find(docSnap =>
-      docSnap.data().email === stdUser.email &&
-      docSnap.data().regNm === stdUser.regNm
-    );
+    const stdDoc = await getDoc(docm);
 
-    if (!studentDoc) {
+    if (!stdDoc.exists()) {
       console.log('❌ Student not found in collection.');
       return;
     }
 
-    const studentRef = studentDoc.ref;
-    let lockNum = studentDoc.data().stdObj.lockState;
+    let lockNum = stdDoc.data().stdObj.lockState;
     if(lockNum >= 3){
       alert('Too many attempts your acct has been disabled for 30 miuntes');
       enableMarkButton(false);
-      const lockTime = studentDoc.data().stdObj.lockStateTime;
-      const lockDate = studentDoc.data().stdObj.lockStateDate;
+      const lockTime = stdDoc.data().stdObj.lockStateTime;
+      const lockDate = stdDoc.data().stdObj.lockStateDate;
       storeWarn(lockNum,lockTime,lockDate);
       
       const request = indexedDB.open('warnDB');
@@ -643,7 +657,7 @@ async function warn(student) {
       }
       return;
     }
-    await updateDoc(studentRef, {
+    await updateDoc(docm, {
       'stdObj.lockState': increment(1),
       'stdObj.lockStateTime': student,
       'stdObj.lockStateDate': new Date().toISOString().slice(0,10),
@@ -716,13 +730,12 @@ async function verifyOnline(callback){
   
   let level = stdUser.level;
   let dept = stdUser.dept;
-  const cllct = collection(db,`user_${level}`,'department',dept);
+  let regNm = stdUser.regNm;
+  const reg = regNm.replace('/','_');
+  const docm = doc(db, 'UNIUYO', level, dept, reg);
   try{
-    const userSnap = await getDocs(cllct);
-    const userSnapData = userSnap.docs.find(std=> 
-      std.data().email === stdUser.email && std.data().regNm === stdUser.regNm
-    );
-    if(!userSnapData){
+    const userSnapData = await getDoc(docm);
+    if(!userSnapData.exists()){
       alert('pls check INTERNET connection and reload app.If error presist then your account is not found on our database an this may result to issues...pls resolve to contact ADEX');
       clearInterval(callback);
       return;
