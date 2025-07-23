@@ -109,7 +109,7 @@ function clearUserData() {
 }
 //function for adding current user to database...
 function addUserToIndexedDB(userObj) {
-  const request = indexedDB.open('adexusers', 1);
+  const request = indexedDB.open('adexUsers', 1);
   request.onupgradeneeded = function (event) {
     const db = event.target.result;
     if (!db.objectStoreNames.contains('users')) {
