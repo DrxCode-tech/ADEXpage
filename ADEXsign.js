@@ -112,7 +112,7 @@ function checkLevel(value) {
 
 // Checking if user exists on DB
 async function checkUser(level, email, dept, regNm) {
-  const reg = regNm.replace('/', '_');
+  const reg = regNm.replace('/', '-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
   try {
     const snapUserData = await getDoc(docm);
@@ -124,7 +124,7 @@ async function checkUser(level, email, dept, regNm) {
 }
 
 async function verifyAndOpen(email, regNm, level, dept) {
-  const reg = regNm.replace('/', '_');
+  const reg = regNm.replace('/', '-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
 
   try {
@@ -175,7 +175,7 @@ async function createUserAcct(user,name,regNm,email,dept,level){
       lockStateDate:'',
     }
   };
-  const reg = regNm.replace('/','_');
+  const reg = regNm.replace('/','-');
   try{
     const docm = doc(db,'UNIUYO',level,dept,reg);
     const emailDocm = doc(db,'EmailIndex',level,email,reg);
