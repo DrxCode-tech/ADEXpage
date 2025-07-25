@@ -104,8 +104,11 @@ function clearUserData() {
       tx.objectStore('users').clear();
       tx.oncomplete = () => db.close();
       console.log('Old user cleared');
-    }
+    }else{ console.log('users not found in adexUsers')}
   };
+  request.onerror = ()=>{
+    console.error('an error occurred trying to clear db',request.error );
+  }
 }
 //function for adding current user to database...
 function addUserToIndexedDB(userObj) {
@@ -123,6 +126,9 @@ function addUserToIndexedDB(userObj) {
     tx.oncomplete = () => db.close();
     console.log('New user added');
   };
+  request.onerror = ()=>{
+    console.error('an error occurred trying to add User to IndexedDB db',request.error );
+  }
 }
 
 //network function
