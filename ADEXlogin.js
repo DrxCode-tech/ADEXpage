@@ -95,7 +95,7 @@ async function findUserInFirestore(email, regNm) {
   return false;
 }
 
-function clearUserData() {
+/*function clearUserData() {
   const request = indexedDB.open('adexUsers', 1);
   request.onsuccess = function (event) {
     const db = event.target.result;
@@ -109,7 +109,7 @@ function clearUserData() {
   request.onerror = ()=>{
     console.error('an error occurred trying to clear db',request.error );
   }
-}
+}*/
 //function for adding current user to database...
 function addUserToIndexedDB(userObj) {
   const request = indexedDB.open('adexUsers', 1);
