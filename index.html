@@ -177,7 +177,7 @@
     function deleteData(dbName){
       let requestDel = indexedDB.deleteDatabase(dbName);
       requestDel.onsuccess = (e)=>{
-        console.log(`from deleteData fun successfully deleted adexUsers ${dbName}`)
+        console.log(`from deleteData fun successfully deleted ${dbName}`)
       }
       
       requestDel.onerror = (err)=>{
