@@ -1,198 +1,293 @@
-import { db, auth } from "./firebaseConfig.js";
-import {
-  getDoc,
-  doc,
-} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
-import {
-  signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
-
-// DOM elements
-const loginButton = document.getElementById('loginForm');
-const RegNM = document.getElementById('regNm');
-//const Department = document.getElementById('department');
-const Email = document.getElementById('email');
-//const Password = document.getElementById('passwordInput');
-const spin = document.querySelector('.spinner-container');
-const messager = document.querySelector('.messager');
-
-let inter;
-function statusDisplay(state, txt) {
-  clearTimeout(inter);
-  messager.innerHTML = '';
-  messager.style.top = '10px';
-  messager.style.color = state ? 'lightgreen' : 'red';
-  messager.innerHTML = txt;
-  inter = setTimeout(() => {
-    messager.style.top = '-100%';
-  }, 5000);
-}
-
-/*document.addEventListener('DOMContentLoaded',()=>{
-  const passwordInput = document.getElementById('passwordInput');
-  const togglePassword = document.getElementById('togglePassword');
-  const eyeOpen = document.getElementById('eyeOpen');
-  const eyeClosed = document.getElementById('eyeClosed');
-  eyeOpen.style.display = 'none';
-  togglePassword.addEventListener('click', () => {
-    const isHidden = passwordInput.type === 'password';
-    passwordInput.type = isHidden ? 'text' : 'password';
-    eyeOpen.style.display = isHidden ? 'inline' : 'none';
-    eyeClosed.style.display = isHidden ? 'none' : 'inline';
-  });
-})*/
-
-// Format reg number
-function standardizeRegNumber(regNumber) {
-  const separators = [',', '-', ':', '_', ' ', ';', '|', ')', '(', '[', ']', '..'];
-  const pattern = new RegExp(separators.map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
-  return regNumber.replace(pattern, '/').replace(/\/+/g, '/');
-}
-
-// IndexedDB storage
-/*function storeUser(user) {
-  const request = indexedDB.open("adexDB", 1);
-
-  request.onupgradeneeded = event => {
-    const db = event.target.result;
-    if (!db.objectStoreNames.contains("users")) {
-      db.createObjectStore("users");
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Create Account - ADEX</title>
+  <style>
+    * {
+      user-select: none;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-  };
 
-  request.onsuccess = event => {
-    const db = event.target.result;
-    const tx = db.transaction("users", "readwrite");
-    tx.objectStore("users").put(user, "currentUser");
+    body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #021a14, #0a3c2a, #048d6b);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 110px;
+      padding-top: 20px;
+      color: #ffffff;
+    }
 
-    tx.oncomplete = () => db.close();
-    tx.onerror = () => {
-      statusDisplay(false, "Failed to store user.");
-      db.close();
-    };
-  };
+    .title {
+      width: 90%;
+      max-width: 400px;
+      padding: 18px;
+      background: #ffffff;
+      color: #048d6b;
+      font-size: 2.4em;
+      font-weight: 800;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
 
-  request.onerror = event => {
-    statusDisplay(false, `IndexedDB error: ${event.target.error}`);
-  };
-}*/
+    .container {
+      width: 90%;
+      max-width: 550px;
+      background: #121212;
+      border-radius: 18px;
+      padding: 30px 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 35px;
+      border: 2px solid #87fcdf;
+      box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+    }
 
-// Correct user lookup
-async function findUserInFirestore(email, regNm) {
-  const levels = ['100', '200', '300', '400', '500'];
-  const reg = regNm.replace(/\//g,'-');
-  for(const level of levels){
-    const docm = doc(db,'EmailIndex',level,email,reg);
-    try{
-      const user = await getDoc(docm);
-      if(user.exists()){
-        return user.data();
+    .container h2 {
+      font-size: 2em;
+      font-weight: 700;
+      color: #87fcdf;
+      text-shadow: 0 0 8px #048d6b;
+    }
+
+    .img-div {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid #87fcdf;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .img-div img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .acct-but {
+      margin-top: 10px;
+      width: 80%;
+      padding: 12px 0;
+      font-size: 1.3em;
+      font-weight: bold;
+      background: linear-gradient(90deg, #048d6b, #87fcdf, #048d6b);
+      background-size: 300% 100%;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+      animation: button 4s linear infinite;
+      cursor: pointer;
+    }
+
+    .acct-but:hover {
+      transform: translateY(-4px);
+    }
+
+    @keyframes b;utton {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #spinner {
+      display: none;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      backdrop-filter: blur(10px);
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 20px 10px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      z-index: 100;
+      width: 300px;
+      height: 70px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #87fcdf;
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .navigator {
+      font-size: 1em;
+      font-weight: bold;
+      color: #87fcdf;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .footer a {
+      text-decoration: none;
+      color: #87fcdf;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h2 class="title">ADEX</h2>
+  <div class="container">
+    <div class="img-div">
+      <img src="AdexImg.jpg" alt="ADEX">
+    </div>
+    <h2>Welcome to ADEX</h2>
+    <button class="acct-but">Create Account</button>
+  </div>
+  <div class="footer">
+    Already have an account? <a href="ADEXlogin.html">Log in</a>
+  </div>
+  
+  <div id="spinner">
+    <div class="spinner-container" >
+      <div class="spinner"></div>
+    </div>
+    <p class="navigator">Loading...</p>
+  </div>
+  
+  <script type="module">
+    import { auth, db } from './firebaseConfig.js';
+    import { getDocs, collection } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+    import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
+    
+    function deleteData(dbName){
+      let requestDel = indexedDB.deleteDatabase(dbName);
+      requestDel.onsuccess = (e)=>{
+        console.log(`from deleteData fun successfully deleted adexUsers ${dbName}`)
       }
-    }catch(err){
-      console.error('error finding user',err.message);
+      
+      requestDel.onerror = (err)=>{
+        console.error(`error from deleteData fun trying to delete ${dbName} ${requestDel.error} `)
+      }
+      
+      requestDel.onblocked = ()=>{
+        console.log(`delete from deleteData fun is blocked -maybe ${dbName} is still open in another tab`);
+      }
     }
-  }
-  return false;
-}
+    
+    const spin = document.getElementById('spinner');
+    const navig = document.querySelector('.navigator');
+    const createBut = document.querySelector('.acct-but');
 
-function clearUserData() {
-  const request = indexedDB.open('adexUsers', 1);
-  request.onsuccess = function (event) {
-    const db = event.target.result;
-    if (db.objectStoreNames.contains('users')) {
-      const tx = db.transaction('users', 'readwrite');
-      tx.objectStore('users').clear();
-      tx.oncomplete = () => db.close();
-      console.log('Old user cleared');
+    function showSpinner(message) {
+      navig.textContent = message;
+      spin.style.display = 'flex';
     }
-  };
-}
-//function for adding current user to database...
-function addUserToIndexedDB(userObj) {
-  const request = indexedDB.open('adexUsers', 1);
-  request.onupgradeneeded = function (event) {
-    const db = event.target.result;
-    if (!db.objectStoreNames.contains('users')) {
-      db.createObjectStore('users');
-    }
-  };
-  request.onsuccess = function (event) {
-    const db = event.target.result;
-    const tx = db.transaction('users', 'readwrite');
-    tx.objectStore('users').put(userObj,'currentUser');
-    tx.oncomplete = () => db.close();
-    console.log('New user added');
-  };
-}
 
-//network function
-async function isReallyOnline() {
-  try {
-    const response = await fetch("https://www.gstatic.com/generate_204", {
-      method: "GET",
-      cache: "no-cache",
-      mode: "no-cors"
+    function hideSpinner() {
+      spin.style.display = 'none';
+    }
+    
+    function storeUser(userObj) {
+      const request = indexedDB.open('adexUsers', 1);
+      request.onupgradeneeded = function (e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('users')) {
+          db.createObjectStore('users');
+        }
+      };
+      request.onsuccess = function (e) {
+        const db = e.target.result;
+        const tx = db.transaction('users', 'readwrite');
+        const store = tx.objectStore('users');
+        const addUser = store.put(userObj, 'currentUser');
+        addUser.onsuccess = () => {
+          console.log('User saved in IndexedDB');
+          setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
+        };
+      };
+    }
+
+    async function checkUserEmailPresent(user) {
+      const email = user.email.toLowerCase();
+      const levels = ['100', '200', '300', '400', '500'];
+
+      for (const level of levels) {
+        const ref = collection(db,'EmailIndex',level,email);
+        try {
+          const snapshot = await getDocs(ref);
+          const found = snapshot.docs.find(doc => doc.data().email === email);
+          if (found) return { exists: true, data: found.data() };
+        } catch (err) {
+          console.error('Error checking user:', err.message);
+          alert(err.message);
+        }
+      }
+      return { exists: false };
+    }
+
+    createBut.addEventListener('click', async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        showSpinner('Verifying account...');
+
+        const check = await checkUserEmailPresent(user);
+        hideSpinner();
+
+        if (check.exists) {
+          storeUser(check.data);
+        } else {
+          alert('Sign in successful. Please complete your registration.');
+          window.location.href = 'ADEXsign.html';
+        }
+      } catch (err) {
+        hideSpinner();
+        if (err.code === 'auth/popup-closed-by-user') {
+          alert("You closed the popup. Try again.");
+        } else {
+          console.log('Error from create acct button click :',err.message);
+          alert("Oops your internet connection is bad");
+        }
+      }
     });
-    // If fetch does not throw, assume online
-    return true;
-  } catch (err) {
-    return false;
-  }
-}
+    
+    // Auto-login if already in IndexedDB
+    function autoLoginIfStored() {
+      const request = indexedDB.open('adexUsers', 1);
+      request.onsuccess = function (e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('users')) return;
+        const tx = db.transaction('users', 'readonly');
+        const store = tx.objectStore('users');
+        const getUser = store.get('currentUser');
 
-// Form submission
-loginButton.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  //checking connection to internet
-  const connection = await isReallyOnline();
-  if(!connection) return statusDisplay(false,'You don\'t have an internet connection!');
-  
-  spin.style.display = 'block';
-  //const department = Department.value.trim();
-  const regNm = standardizeRegNumber(RegNM.value.trim().toUpperCase());
-  const email = Email.value.trim().toLowerCase();
-  //const password = Password.value.trim();
-
-  if (!regNm || !email) {
-    spin.style.display = 'none';
-    return statusDisplay(false, "All fields are required.");
-  }
-
-  try {
-
-    const userData = await findUserInFirestore(email, regNm);
-
-    if (!userData) {
-      spin.style.display = 'none';
-      statusDisplay(false, 'User not found. Please sign up.');
-      clearUserData();
-      return window.location.href = 'index.html';
+        getUser.onsuccess = () => {
+          if (getUser.result) {
+            showSpinner(`${getUser.result.name || 'User'} logging in...`);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
+          }
+        };
+      };
     }
 
-    if (userData.email === email && userData.regNm === regNm) {
-      clearUserData(); // clear previous user
-      addUserToIndexedDB(userData); // add current user
-      //storeUser(userData) your existing backup store (if needed)
-
-      spin.style.display = 'none';
-      statusDisplay(true, 'Login successful!');
-      setTimeout(() => window.location.href = 'V3ADEX.html', 30000);
-    }else {
-      spin.style.display = 'none';
-      statusDisplay(false, 'Credentials do not match our records.');
-      clearUserData();
-      setTimeout(() => window.location.href = 'index.html', 1500);
-    }
-  } catch (err) {
-    spin.style.display = 'none';
-    statusDisplay(false, `Login failed: ${err.message}`);
-  }
-});
-
-const footer = document.querySelector('.footer');
-footer.addEventListener('click',()=>{
-  clearUserData();
-  window.location.href = 'index.html';
-})
-
+    autoLoginIfStored();
+  </script>
+</body>
+</html>
