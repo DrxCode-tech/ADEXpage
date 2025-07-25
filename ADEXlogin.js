@@ -177,7 +177,7 @@ loginButton.addEventListener('submit', async (e) => {
 
       spin.style.display = 'none';
       statusDisplay(true, 'Login successful!');
-      setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
+      setTimeout(() => window.location.href = 'V3ADEX.html', 30000);
     }else {
       spin.style.display = 'none';
       statusDisplay(false, 'Credentials do not match our records.');
