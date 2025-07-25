@@ -172,12 +172,12 @@ loginButton.addEventListener('submit', async (e) => {
     if (!userData) {
       spin.style.display = 'none';
       statusDisplay(false, 'User not found. Please sign up.');
-      clearUserData();
+     //clearUserData();
       return window.location.href = 'index.html';
     }
 
     if (userData.email === email && userData.regNm === regNm) {
-      clearUserData(); // clear previous user
+      //clearUserData(); // clear previous user
       addUserToIndexedDB(userData); // add current user
       //storeUser(userData) your existing backup store (if needed)
 
