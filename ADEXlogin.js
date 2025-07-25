@@ -188,7 +188,8 @@
         console.log(`delete from deleteData fun is blocked -maybe ${dbName} is still open in another tab`);
       }
     }
-    
+    deleteData('adexUsers');
+    deleteData('adexusers');
     const spin = document.getElementById('spinner');
     const navig = document.querySelector('.navigator');
     const createBut = document.querySelector('.acct-but');
