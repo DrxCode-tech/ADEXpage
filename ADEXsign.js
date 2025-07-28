@@ -11,8 +11,6 @@ import {
   setDoc,
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
@@ -44,12 +42,14 @@ function statusDisplay(state, txt) {
 
 // Store user data under key "currentUser"
 function storeUser(user) {
-  const request = indexedDB.open("adexUsers", 1);
+  DB.setItem('currentUser',JSON.stringify(user));
+  const request = indexedDB.open("AdexUsers",2);
 
   request.onupgradeneeded = function(event) {
     const db = event.target.result;
     if (!db.objectStoreNames.contains("users")) {
       db.createObjectStore("users");
+      console.log('onupgradeneeded successful');
     }
   };
 
@@ -61,7 +61,7 @@ function storeUser(user) {
     store.put(user, "currentUser");
 
     tx.oncomplete = function () {
-      console.log("User stored successfully.");
+      console.log("User stored successfully to IndexedDB and localStorage.");
       db.close();
     };
 
@@ -112,7 +112,7 @@ function checkLevel(value) {
 
 // Checking if user exists on DB
 async function checkUser(level, email, dept, regNm) {
-  const reg = regNm.replace(/\//g, '-');
+  const reg = regNm.replace('/', '_');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
   try {
     const snapUserData = await getDoc(docm);
@@ -124,7 +124,7 @@ async function checkUser(level, email, dept, regNm) {
 }
 
 async function verifyAndOpen(email, regNm, level, dept) {
-  const reg = regNm.replace(/\//g, '-');
+  const reg = regNm.replace('/', '_');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
 
   try {
@@ -139,6 +139,7 @@ async function verifyAndOpen(email, regNm, level, dept) {
           email: userDt.email,
           dept: userDt.dept,
           date: userDt.date,
+          stdObj:userDt.stdObj,
         };
         storeUser(newUser);
         spinner.style.display = 'none';
@@ -175,7 +176,7 @@ async function createUserAcct(user,name,regNm,email,dept,level){
       lockStateDate:'',
     }
   };
-  const reg = regNm.replace(/\//g,'-');
+  const reg = regNm.replace('/','_');
   try{
     const docm = doc(db,'UNIUYO',level,dept,reg);
     const emailDocm = doc(db,'EmailIndex',level,email,reg);
@@ -238,7 +239,7 @@ signUpButton.addEventListener('submit', async (e) => {
   }
 
 
-  spinner.style.display = 'block';
+  
   const result = await getCurrentUser();
   const email = result.email.toLowerCase();
   // Check if user already exists
@@ -247,11 +248,10 @@ signUpButton.addEventListener('submit', async (e) => {
     await verifyAndOpen(email,regNm, levelInput, department);
     return;
   }
-
+  spinner.style.display = 'block';
   try{
     await signUpUser(result,name, email, levelInput, department, regNm);
      }catch(err){
     statusDisplay(false, `${err}`);
   }
-  
 })
