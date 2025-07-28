@@ -318,7 +318,7 @@
             setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
             
           }
-          else if(localResult){
+          else if(localResult.name){
             showSpinner(`${localResult.name || 'User'} logging in...`);
             console.log(localResult);
             setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
@@ -326,7 +326,7 @@
           db.close();
         };
         getUser.onerror = (e)=>{
-          if(localResult){
+          if(localResult.name){
             showSpinner(`${localResult.name || 'User'} logging in...`);
             setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
             console.log('error occur in indexedDB...fetch data from local');
@@ -338,7 +338,7 @@
         }
       };
       request.onerror = (e)=>{
-        if(localResult){
+        if(localResult.name){
           showSpinner(`${localResult.name || 'User'} logging in...`);
           setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
           console.log('onupgradeneeded error occur ..but fetched successfully from localStorage');
