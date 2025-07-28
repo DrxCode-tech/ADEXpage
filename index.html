@@ -30,13 +30,16 @@
       width: 90%;
       max-width: 400px;
       padding: 18px;
-      background: #ffffff;
+      background: black;
       color: #048d6b;
       font-size: 2.4em;
       font-weight: 800;
       border-radius: 15px;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      box-shadow: 0 0 20px #87fcdf;
+    }
+    .shadow{
+      -webkit-box-reflect: below -15px linear-gradient(transparent, rgba(0, 0, 0, 0.3));
     }
 
     .container {
@@ -96,7 +99,7 @@
       transform: translateY(-4px);
     }
 
-    @keyframes b;utton {
+    @keyframes button {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
@@ -150,7 +153,7 @@
 </head>
 
 <body>
-  <h2 class="title">ADEX</h2>
+  <div class="title" data-text="ADEX"><p class="shadow">ADEX</p></div>
   <div class="container">
     <div class="img-div">
       <img src="AdexImg.jpg" alt="ADEX">
@@ -173,7 +176,7 @@
     import { auth, db } from './firebaseConfig.js';
     import { getDocs, collection } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
     import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
-    
+    const DB = window.localStorage;
     function deleteData(dbName){
       let requestDel = indexedDB.deleteDatabase(dbName);
       requestDel.onsuccess = (e)=>{
@@ -202,14 +205,17 @@
     function showSpinner(message) {
       navig.textContent = message;
       spin.style.display = 'flex';
+      createBut.disabled = true;
     }
 
     function hideSpinner() {
       spin.style.display = 'none';
+      createBut.disabled = false;
     }
     
     function storeUser(userObj) {
-      const request = indexedDB.open('adexUsers', 1);
+      DB.setItem('currentUser',JSON.stringify(Array.from(Object.entries(userObj))));
+      const request = indexedDB.open('AdexUsers',2);
       request.onupgradeneeded = function (e) {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('users')) {
@@ -221,11 +227,21 @@
         const tx = db.transaction('users', 'readwrite');
         const store = tx.objectStore('users');
         const addUser = store.put(userObj, 'currentUser');
+        
         addUser.onsuccess = () => {
-          console.log('User saved in IndexedDB');
+          console.log('User saved in IndexedDB and localStorage successfully');
           setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
         };
+        addUser.onerror = (e)=>{
+          
+          console.log('An error occured trying to add to IndexedDB but data successfully saved to localStorage',e.target.error);
+        }
+        db.close();
       };
+      request.onerror = (e)=>{
+        
+        console.log('onupgradeneeded error occured but data successfully saved to localStorage',e.target.error);
+      }
     }
 
     async function checkUserEmailPresent(user) {
@@ -274,12 +290,23 @@
       }
     });
     
+    
     // Auto-login if already in IndexedDB
     function autoLoginIfStored() {
-      const request = indexedDB.open('adexUsers', 1);
+      const local = DB.getItem('currentUser') ;
+      const localResult = local ? JSON.parse(local) : {};
+      console.log(localResult);
+      const request = indexedDB.open('AdexUsers',2);
+      request.onupgradeneeded = (e)=>{
+        const db = e.target.result;
+        if(!db.objectStoreNames.contains('users')){
+          db.createObjectStore('users');
+          console.log('users created successfully')
+        }
+      }
       request.onsuccess = function (e) {
         const db = e.target.result;
-        if (!db.objectStoreNames.contains('users')) return;
+        if (!db.objectStoreNames.contains('users') && !localResult) return console.log('users not found!');
         const tx = db.transaction('users', 'readonly');
         const store = tx.objectStore('users');
         const getUser = store.get('currentUser');
@@ -287,12 +314,40 @@
         getUser.onsuccess = () => {
           if (getUser.result) {
             showSpinner(`${getUser.result.name || 'User'} logging in...`);
+            console.log(getUser.result);
             setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
+            
           }
+          else if(localResult){
+            showSpinner(`${localResult.name || 'User'} logging in...`);
+            console.log(localResult);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+          }
+          db.close();
         };
+        getUser.onerror = (e)=>{
+          if(localResult){
+            showSpinner(`${localResult.name || 'User'} logging in...`);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+            console.log('error occur in indexedDB...fetch data from local');
+          }else{
+            console.log('error occur in indexedDB');
+            return;
+          }
+          db.close();
+        }
       };
+      request.onerror = (e)=>{
+        if(localResult){
+          showSpinner(`${localResult.name || 'User'} logging in...`);
+          setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+          console.log('onupgradeneeded error occur ..but fetched successfully from localStorage');
+          return;
+        }
+        console.log('onupgradeneeded error occured');
+      }
     }
-
+    
     autoLoginIfStored();
   </script>
 </body>
