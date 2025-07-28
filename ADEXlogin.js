@@ -8,6 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
 // DOM elements
+const DB = window.localStorage;
 const loginButton = document.getElementById('loginForm');
 const RegNM = document.getElementById('regNm');
 //const Department = document.getElementById('department');
@@ -49,34 +50,6 @@ function standardizeRegNumber(regNumber) {
   return regNumber.replace(pattern, '/').replace(/\/+/g, '/');
 }
 
-// IndexedDB storage
-/*function storeUser(user) {
-  const request = indexedDB.open("adexDB", 1);
-
-  request.onupgradeneeded = event => {
-    const db = event.target.result;
-    if (!db.objectStoreNames.contains("users")) {
-      db.createObjectStore("users");
-    }
-  };
-
-  request.onsuccess = event => {
-    const db = event.target.result;
-    const tx = db.transaction("users", "readwrite");
-    tx.objectStore("users").put(user, "currentUser");
-
-    tx.oncomplete = () => db.close();
-    tx.onerror = () => {
-      statusDisplay(false, "Failed to store user.");
-      db.close();
-    };
-  };
-
-  request.onerror = event => {
-    statusDisplay(false, `IndexedDB error: ${event.target.error}`);
-  };
-}*/
-
 // Correct user lookup
 async function findUserInFirestore(email, regNm) {
   const levels = ['100', '200', '300', '400', '500'];
@@ -95,28 +68,30 @@ async function findUserInFirestore(email, regNm) {
   return false;
 }
 
-/*function clearUserData() {
-  const request = indexedDB.open('adexUsers', 1);
+function clearUserData() {
+  DB.clear();
+  const request = indexedDB.deleteDatabase('AdexUsers');
+  request.onblock = ()=>{
+    console.log('failed to delete ...pls make sure to close all tabs concerning ADEX before proceeding ')
+  }
   request.onsuccess = function (event) {
-    const db = event.target.result;
-    if (db.objectStoreNames.contains('users')) {
-      const tx = db.transaction('users', 'readwrite');
-      tx.objectStore('users').clear();
-      tx.oncomplete = () => db.close();
-      console.log('Old user cleared');
-    }else{ console.log('users not found in adexUsers')}
+    console.log('successfully cleared previous user')
   };
   request.onerror = ()=>{
     console.error('an error occurred trying to clear db',request.error );
   }
-}*/
+}
+
 //function for adding current user to database...
 function addUserToIndexedDB(userObj) {
-  const request = indexedDB.open('adexUsers', 1);
+  DB.setItem('currentUser',JSON.stringify(userObj));
+  console.log('added data to localStorage');
+  const request = indexedDB.open('AdexUsers',2);
   request.onupgradeneeded = function (event) {
     const db = event.target.result;
     if (!db.objectStoreNames.contains('users')) {
       db.createObjectStore('users');
+      console.log('onupgradeneeded successful');
     }
   };
   request.onsuccess = function (event) {
@@ -128,6 +103,7 @@ function addUserToIndexedDB(userObj) {
   };
   request.onerror = ()=>{
     console.error('an error occurred trying to add User to IndexedDB db',request.error );
+    db.close();
   }
 }
 
@@ -183,7 +159,7 @@ loginButton.addEventListener('submit', async (e) => {
 
       spin.style.display = 'none';
       statusDisplay(true, 'Login successful!');
-      setTimeout(() => window.location.href = 'V3ADEX.html', 30000);
+      setTimeout(() => window.location.href = 'V3ADEX.html', 1500);
     }else {
       spin.style.display = 'none';
       statusDisplay(false, 'Credentials do not match our records.');
