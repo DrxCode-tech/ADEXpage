@@ -14,6 +14,8 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
+
+const DB = window.localStorage;
 // Initialization of inputs
 const signUpButton = document.getElementById('signupForm');
 const Name = document.getElementById('name');
