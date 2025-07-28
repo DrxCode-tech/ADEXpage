@@ -18,7 +18,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 let stdUser;
-
+const dtb = window.localStorage;
 //initialization of inputs and display
 const Name = document.getElementById('userName');
 const RegNM = document.getElementById('regNumber');
@@ -126,10 +126,12 @@ function onLoadCheck() {
       }
 
       enableMarkButton(false);
+      DB.close();
     };
 
     getLockObj.onerror = function (e) {
       console.error('Error reading from warnDB:', e.target.error);
+      DB.close();
     };
   };
 
@@ -163,6 +165,7 @@ function onloadMark(){
     const syncInterval = setInterval(() => {
       trySyncStoredAttendance(DB, syncInterval);
     }, 3000);
+    DB.close();
   };
   
   request.onerror = function (event) {
@@ -210,19 +213,22 @@ window.addEventListener('DOMContentLoaded',async () => {
     cancelState = !cancelState;
   })
   
-  const request = indexedDB.open('adexUsers', 1);
-  
+  const request = indexedDB.open('AdexUsers',2);
+  const localStdObj = JSON.parse(dtb.getItem('currentUser'));
+  console.log(localStdObj);
+  console.log(localStdObj ? 'successfully gotten data from localStorage' : 'no data found on localStorage');
   request.onupgradeneeded = function (event) {
     const DB = event.target.result;
     if (!DB.objectStoreNames.contains('users')) {
       DB.createObjectStore('users');
+      console.log('onupgradeneeded successful...sending students to be displayed on screen')
     }
   };
 
   request.onsuccess = function (event) {
     const DB = event.target.result;
 
-    if (!DB.objectStoreNames.contains('users')) {
+    if (!DB.objectStoreNames.contains('users') && !localStdObj) {
       console.error("Object store 'users' does not exist.");
       return;
     }
@@ -235,13 +241,33 @@ window.addEventListener('DOMContentLoaded',async () => {
       stdUser = getRequest.result;
       if (stdUser) {
         displayUserDetails(stdUser);
-      } else {
+        console.log('display student from IndexedDB');
+      }
+      else if(localStdObj){
+        displayUserDetails(localStdObj);
+        console.log('display student from localStorage');
+      }
+      else {
         window.location.href = 'ADEXlogin.html'; // redirect if not logged in
       }
+      DB.close()
     };
+    getRequest.onerror = (e)=>{
+      if(localStdObj){
+        displayUserDetails(localStdObj);
+        console.log('display student from localStorage');
+      }
+      console.log(localStdObj ? 'failed to fetch from IndexedDB but fetched from local' : 'fail to fetch and localStorage empty!');
+    }
+    DB.close();
   };
 
   request.onerror = function (event) {
+    if(localStdObj){
+      displayUserDetails(localStdObj);
+      console.log('display student from localStorage');
+    }
+    console.log(localStdObj ? 'failed to fetch from IndexedDB but fetched from local' : 'fail to fetch and localStorage empty!');
     console.error('Error opening IndexedDB:', event.target.error);
   };
   
@@ -288,8 +314,8 @@ window.addEventListener('DOMContentLoaded',async () => {
 });
 
 function displayUserDetails(user) {
-  document.getElementById('userName').textContent = user.name || 'USER NAME';
-  document.getElementById('regNumber').textContent = user.regNm || 'USER_REG NUMBER';
+  document.getElementById('userName').textContent = user.name;
+  document.getElementById('regNumber').textContent = user.regNm;
   document.querySelector('.user-nm').innerHTML = user.name || `<a href="ADEXlogin.html">Login</a>`;
   document.querySelector('.department').textContent = user.dept || 'Department';
 }
@@ -690,8 +716,10 @@ function verifyOffline(db, callback,callback2) {
     if (lockState === 0) {
       console.log('it f*cking works!');
       clearInterval(callback);
+      db.close();
       if(callback2){
         clearInterval(callback2);
+        db.close();
       }
       return;
     }
@@ -702,8 +730,10 @@ function verifyOffline(db, callback,callback2) {
     if (currentDate !== lockStateDate) {
       updateWarnDB(db);
       clearInterval(callback);
+      db.close();
       if(callback2){
         clearInterval(callback2);
+        db.close();
       }
       return;
     }
@@ -714,8 +744,10 @@ function verifyOffline(db, callback,callback2) {
     if (diff >= 1) {
       updateWarnDB(db);
       clearInterval(callback);
+      db.close();
       if(callback2){
         clearInterval(callback2);
+        db.close();
       }
       return;
     }
@@ -838,7 +870,7 @@ markBt.addEventListener('click',async (e)=>{
   const department = (Department.textContent.trim() !== 'Department') ? Department.textContent.trim() : false;
   let cours = (currentCourseDisplay.textContent.trim() !== 'No class') ? currentCourseDisplay.textContent.trim() : false;
   
-  if(!name || !regNm) return alert('All ADEX field must be filled!');
+  if(!name || !regNm || !department || !cours) return alert('All ADEX field must be filled!');
 
   const course = cours.replace(/\s+/g, '').toUpperCase();
   
@@ -1010,4 +1042,4 @@ function trySyncStoredAttendance(db, interval) {
       console.error("Failed to read from IndexedDB during sync.");
     };
   });
-}
+                                        }
