@@ -165,7 +165,7 @@ function onloadMark(){
     const syncInterval = setInterval(() => {
       trySyncStoredAttendance(DB, syncInterval);
     }, 3000);
-    DB.close();
+    
   };
   
   request.onerror = function (event) {
@@ -1039,6 +1039,7 @@ function trySyncStoredAttendance(db, interval) {
     };
 
     getAllRequest.onerror = function () {
+      db.close();
       console.error("Failed to read from IndexedDB during sync.");
     };
   });
