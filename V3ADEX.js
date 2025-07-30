@@ -448,7 +448,6 @@ async function markAttendance(name, regNm, dept, course, date) {
     regNm,
   };
   const reg = regNm.replace(/\//g,'-');
-  alert(reg);
   const docRef = doc(db,course,date,dept,reg);
   const DeptPath = doc(db,course,date,'DP','deptList');
   try {
