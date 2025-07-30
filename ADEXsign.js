@@ -114,7 +114,7 @@ function checkLevel(value) {
 
 // Checking if user exists on DB
 async function checkUser(level, email, dept, regNm) {
-  const reg = regNm.replace('/', '_');
+  const reg = regNm.replace(/\//g, '_');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
   try {
     const snapUserData = await getDoc(docm);
@@ -126,7 +126,7 @@ async function checkUser(level, email, dept, regNm) {
 }
 
 async function verifyAndOpen(email, regNm, level, dept) {
-  const reg = regNm.replace('/', '_');
+  const reg = regNm.replace(/\//g, '_');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
 
   try {
@@ -138,6 +138,7 @@ async function verifyAndOpen(email, regNm, level, dept) {
           uid: userDt.uid,
           name: userDt.name,
           regNm: userDt.regNm,
+          regNumber:userDt.regNumber,
           email: userDt.email,
           dept: userDt.dept,
           date: userDt.date,
@@ -164,11 +165,13 @@ async function verifyAndOpen(email, regNm, level, dept) {
 
 // Sign up new user and store in Firebase & IndexedDB
 async function createUserAcct(user,name,regNm,email,dept,level){
+  const regNumber = regNm.split('/').pop();
   const newUser = {
     uid: user.uid,
     name,
     level,
     regNm,
+    regNumber,
     email,
     dept,
     date: new Date().toISOString(),
@@ -178,7 +181,7 @@ async function createUserAcct(user,name,regNm,email,dept,level){
       lockStateDate:'',
     }
   };
-  const reg = regNm.replace('/','_');
+  const reg = regNm.replace(/\//g,'_');
   try{
     const docm = doc(db,'UNIUYO',level,dept,reg);
     const emailDocm = doc(db,'EmailIndex',level,email,reg);
