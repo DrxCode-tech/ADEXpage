@@ -647,7 +647,7 @@ async function warn(student) {
   const dept = stdUser.dept;
   const regNm = stdUser.regNm;
   console.log(stdUser);
-  const reg = regNm.replace('/','-');
+  const reg = regNm.replace(/\//g,'-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
 
   try {
