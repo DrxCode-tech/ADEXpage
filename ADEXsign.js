@@ -114,7 +114,7 @@ function checkLevel(value) {
 
 // Checking if user exists on DB
 async function checkUser(level, email, dept, regNm) {
-  const reg = regNm.replace(/\//g, '_');
+  const reg = regNm.replace(/\//g, '-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
   try {
     const snapUserData = await getDoc(docm);
