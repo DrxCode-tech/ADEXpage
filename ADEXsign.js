@@ -126,7 +126,7 @@ async function checkUser(level, email, dept, regNm) {
 }
 
 async function verifyAndOpen(email, regNm, level, dept) {
-  const reg = regNm.replace(/\//g, '_');
+  const reg = regNm.replace(/\//g, '-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
 
   try {
