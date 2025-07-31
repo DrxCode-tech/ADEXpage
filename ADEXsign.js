@@ -181,7 +181,7 @@ async function createUserAcct(user,name,regNm,email,dept,level){
       lockStateDate:'',
     }
   };
-  const reg = regNm.replace(/\//g,'_');
+  const reg = regNm.replace(/\//g,'-');
   try{
     const docm = doc(db,'UNIUYO',level,dept,reg);
     const emailDocm = doc(db,'EmailIndex',level,email,reg);
