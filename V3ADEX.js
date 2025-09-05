@@ -317,7 +317,7 @@ function displayUserDetails(user) {
   document.getElementById('userName').textContent = user.name;
   document.getElementById('regNumber').textContent = user.regNm;
   document.querySelector('.user-nm').innerHTML = user.name || `<a href="ADEXlogin.html">Login</a>`;
-  document.querySelector('.department').textContent = user.dept || 'COMPUTER_ENGINEERING;
+  document.querySelector('.department').textContent = user.dept || 'COMPUTER_ENGINEERING';
 }
 
 //log out function
