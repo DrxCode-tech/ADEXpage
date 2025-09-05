@@ -421,7 +421,7 @@ async function loadAttendance() {
 }
 let reviewSt = false;
 attReview.addEventListener('click',async ()=>{
-  await loadAttendane();
+  await loadAttendance();
   attView.style.height = reviewSt ? '0em':'20em';
   attView.style.padding = reviewSt ? '0px':'10px 5px';
   reviewSt = !reviewSt;
