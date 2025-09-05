@@ -317,7 +317,7 @@ function displayUserDetails(user) {
   document.getElementById('userName').textContent = user.name;
   document.getElementById('regNumber').textContent = user.regNm;
   document.querySelector('.user-nm').innerHTML = user.name || `<a href="ADEXlogin.html">Login</a>`;
-  document.querySelector('.department').textContent = user.dept || 'Department';
+  document.querySelector('.department').textContent = user.dept || 'COMPUTER_ENGINEERING;
 }
 
 //log out function
@@ -869,7 +869,7 @@ markBt.addEventListener('click',async (e)=>{
   const department = (Department.textContent.trim() !== 'Department') ? Department.textContent.trim() : false;
   let cours = (currentCourseDisplay.textContent.trim() !== 'No class') ? currentCourseDisplay.textContent.trim() : false;
   
-  if(!name || !regNm || !department || !cours) return alert('All ADEX field must be filled!');
+  if(!name || !regNm || !cours) return alert('All ADEX field must be filled!');
 
   const course = cours.replace(/\s+/g, '').toUpperCase();
   
