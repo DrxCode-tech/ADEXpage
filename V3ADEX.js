@@ -15,10 +15,11 @@ import {
   setDoc,
   updateDoc,
   increment,
+  runTransaction,
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
 let stdUser;
-
+const dtb = window.localStorage;
 //initialization of inputs and display
 const Name = document.getElementById('userName');
 const RegNM = document.getElementById('regNumber');
@@ -29,6 +30,30 @@ const messager = document.querySelector('.messager');
 const attView = document.querySelector('.att-view');
 const attReview = document.querySelector('.att-review');
 const reviewBut = document.querySelector('.reviewBut');
+const reviewLog = document.querySelector('.b-review');
+const attHpage = document.querySelector('.attdhis-view');
+if(!JSON.parse(dtb.getItem('att-his-state')) || JSON.parse(dtb.getItem('att-his-state')) !== 1){
+  dtb.setItem('att-his-state',JSON.stringify(0));
+}
+
+//customizer
+const modeToggle = document.getElementById("modeToggle");
+let theme ;
+modeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+
+  // (optional) Save preference in localStorage
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+});
+
+// Load saved theme
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+}
 
 let inter;
 function statusDisplay(state, txt) {
@@ -57,6 +82,10 @@ function enableMarkButton(state){
   }
 }
 
+attHpage.addEventListener('click',()=>{
+  window.location.href = 'attH.html'; 
+});
+
 //getting date function
 function getCurrentDate() {
   const now = new Date();
@@ -64,6 +93,14 @@ function getCurrentDate() {
   const month = now.getMonth() + 1; // No padStart
   const year = now.getFullYear();
   return `${day}${month}${year}`;
+}
+
+function getDashedDate() {
+  const now = new Date();
+  const day = now.getDate(); // No padStart — gives single digit if needed
+  const month = now.getMonth() + 1; // No padStart
+  const year = now.getFullYear();
+  return `${day}-${month}-${year}`;
 }
 
 function getFormattedDate() {
@@ -74,71 +111,8 @@ function getFormattedDate() {
   return `${day}/${month}/${year}`;
 }
 
-function onLoadCheck() {
-  const request = indexedDB.open('warnDB');
-
-  request.onupgradeneeded = function (e) {
-    const DB = e.target.result;
-    if (!DB.objectStoreNames.contains('warn')) {
-      DB.createObjectStore('warn');
-      console.log('onLoadCheck upgraded warnDB successfully');
-    }
-  };
-
-  request.onsuccess = function (e) {
-    const DB = e.target.result;
-
-    if (!DB.objectStoreNames.contains('warn')) {
-      console.log('Error from onLoadCheck /request.onsuccess: warning DB not found');
-      return;
-    }
-
-    const tx = DB.transaction('warn', 'readonly');
-    const store = tx.objectStore('warn');
-    const getLockObj = store.get('currentLock');
-
-    getLockObj.onsuccess = async function () {
-      const result = getLockObj.result;
-
-      if (!result) {
-        console.log('No lock data found');
-        return;
-      }
-
-      const { lockState, lockStateTime, lockStateDate } = result;
-
-      if (lockState === 0) {
-        console.log('no warning');
-        await updateWarnDBOnline();
-        return;
-      }
-
-      console.log('from offline:', result);
-
-      const currentDate = new Date().toISOString().slice(0, 10);
-      const currentTime = getTimeInSecs();
-      const diff = (parseInt(currentTime) - parseInt(lockStateTime)) / 1800;
-
-      if (currentDate !== lockStateDate || diff >= 1) {
-        updateWarnDB(DB);
-        await updateWarnDBOnline();
-        return;
-      }
-
-      enableMarkButton(false);
-    };
-
-    getLockObj.onerror = function (e) {
-      console.error('Error reading from warnDB:', e.target.error);
-    };
-  };
-
-  request.onerror = function (e) {
-    console.error('Error opening warnDB:', e.target.error);
-  };
-}
 function onloadMark(){
-  const request = indexedDB.open('adexDBrecord', 1);
+  const request = indexedDB.open('adexrecord', 1);
 
   request.onupgradeneeded = function (event) {
     const DB = event.target.result;
@@ -163,66 +137,50 @@ function onloadMark(){
     const syncInterval = setInterval(() => {
       trySyncStoredAttendance(DB, syncInterval);
     }, 3000);
+    
   };
   
   request.onerror = function (event) {
-    console.error("Error opening IndexedDB:", event.target.error);
+    console.error("Error opening Indexed:", event.target.error);
     statusDisplay(false, "Failed to save offline data.");
   };
 }
 
-function onloadCheckInterval(){
-  const request = indexedDB.open('warnDB');
-  request.onupgradeneeded = function(e){
-    const DB = e.target.result;
-    if(!DB.objectStoreNames.contains('warn')){
-      DB.createObjectStore('warn');
-      console.log('Success creating warn database')
-    };
-  }
-  request.onsuccess = function(e){
-    const DB = e.target.result;
-    const syncInterval = setInterval(() => {
-      checkDisability(DB,syncInterval);
-    }, 20000);
-  }
-  request.onerror = (e)=>{
-    console.error('error trying to upgrade Warn database :',e.target.error);
-  }
-}
-
 window.addEventListener('DOMContentLoaded',async () => {
-  await onLoadCheck();
-  onloadCheckInterval();
   onloadMark();
   reviewBut.addEventListener('click',()=>{
     window.location.href = 'review.html';
-  })
+  });
+  reviewLog.addEventListener('click',()=>{
+    window.location.href = 'review.html';
+  });
+  const cancel = document.querySelector('.cancel');
+  cancel.addEventListener('click',()=>{
+    sideBar.style.width = '0%';
+    cancelState = !cancelState;
+  });
   let cancelState = false;
-  const cancelStateButton = document.querySelector('.cancle');
-  const sideBar = document.querySelector('.side-bar');
-  cancelStateButton.addEventListener('click',()=>{
-    sideBar.style.width = !cancelState ? '50%' : '0%';
+  const sideBar = document.querySelector('.nav-bar');
+  document.querySelector('.menu').addEventListener('click',()=>{
+    sideBar.style.width = !cancelState ? '40%' : '0%';
     cancelState = !cancelState;
   })
-  document.querySelector('.bar').addEventListener('click',()=>{
-    sideBar.style.width = !cancelState ? '50%' : '0%';
-    cancelState = !cancelState;
-  })
-  
-  const request = indexedDB.open('adexUsers', 1);
-  
+  const request = indexedDB.open('AdexUsers',2);
+  const localStdObj = JSON.parse(dtb.getItem('currentUser'));
+  console.log(localStdObj);
+  console.log(localStdObj ? 'successfully gotten data from localStorage' : 'no data found on localStorage');
   request.onupgradeneeded = function (event) {
     const DB = event.target.result;
     if (!DB.objectStoreNames.contains('users')) {
       DB.createObjectStore('users');
+      console.log('onupgradeneeded successful...sending students to be displayed on screen')
     }
   };
 
   request.onsuccess = function (event) {
     const DB = event.target.result;
 
-    if (!DB.objectStoreNames.contains('users')) {
+    if (!DB.objectStoreNames.contains('users') && !localStdObj) {
       console.error("Object store 'users' does not exist.");
       return;
     }
@@ -230,25 +188,47 @@ window.addEventListener('DOMContentLoaded',async () => {
     const tx = DB.transaction('users', 'readonly');
     const store = tx.objectStore('users');
     const getRequest = store.get('currentUser');
-
-    getRequest.onsuccess = function () {
+    console.log('successfully gotten it');
+    getRequest.onsuccess = async function () {
       stdUser = getRequest.result;
       if (stdUser) {
-        displayUserDetails(stdUser);
-      } else {
+        await displayUserDetails(stdUser);
+        console.log('display student from Indexed');
+      }
+      else if(localStdObj){
+        await displayUserDetails(localStdObj);
+        console.log('display student from localStorage');
+      }
+      else {
         window.location.href = 'ADEXlogin.html'; // redirect if not logged in
       }
+      DB.close()
     };
+    getRequest.onerror = async (e)=>{
+      if(localStdObj){
+        await displayUserDetails(localStdObj);
+        console.log('display student from localStorage');
+      }
+      console.log(localStdObj ? 'failed to fetch from Indexed but fetched from local' : 'fail to fetch and localStorage empty!');
+    }
+    DB.close();
   };
 
-  request.onerror = function (event) {
-    console.error('Error opening IndexedDB:', event.target.error);
+  request.onerror = async function (event) {
+    if(localStdObj){
+      await displayUserDetails(localStdObj);
+      console.log('display student from localStorage');
+    }
+    console.log(localStdObj ? 'failed to fetch from Indexed but fetched from local' : 'fail to fetch and localStorage empty!');
+    console.error('Error opening Indexed:', event.target.error);
   };
+  //checking if acct disabled
+  await checkDisability();
   
   //drawing on ADEX...
   const canvas = document.querySelector(".canvas");
   const ctx = canvas.getContext("2d");
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = "green";
   ctx.lineWidth = 3;
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
@@ -285,13 +265,53 @@ window.addEventListener('DOMContentLoaded',async () => {
   if (clearBtn) {
     clearBtn.addEventListener("click", () => ctx.clearRect(0, 0, canvas.width, canvas.height));
   }
+  
+
 });
 
-function displayUserDetails(user) {
-  document.getElementById('userName').textContent = user.name || 'USER NAME';
-  document.getElementById('regNumber').textContent = user.regNm || 'USER_REG NUMBER';
+//tracker code
+async function trackPageView() {
+  const key = "NOTP";
+  const today = new Date().toISOString().split("T")[0]; // e.g. "2025-10-05"
+
+  // Get current count from localStorage
+  let count = Number(JSON.parse(localStorage.getItem(key))) || 0;
+  count++;
+  localStorage.setItem(key, JSON.stringify(count));
+  console.log("Page view updated locally:", count);
+
+  // Try syncing with backend if online
+  if (navigator.onLine) {
+    try {
+      const response = await fetch("https://attd-backend.onrender.com/track", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ date: today, count }),
+      });
+
+      if (response.ok) {
+        console.log("Synced with backend successfully");
+        localStorage.removeItem(key); // clear after successful sync
+      } else {
+        console.warn("Failed to sync with backend:", response.status);
+      }
+    } catch (err) {
+      console.warn("Error syncing with backend:", err.message);
+    }
+  }
+}
+
+async function displayUserDetails(user){
+  document.getElementById('userName').textContent = user.name;
+  document.getElementById('regNumber').textContent = user.regNm;
   document.querySelector('.user-nm').innerHTML = user.name || `<a href="ADEXlogin.html">Login</a>`;
-  document.querySelector('.department').textContent = user.dept || 'Department';
+  document.querySelector('.department').textContent = user.dept;
+  const date = getDashedDate();
+  const isOffline = await isReallyOnline();
+  // Call this on page load
+  await trackPageView();
 }
 
 //log out function
@@ -330,7 +350,7 @@ function checkAttendanceState() {
 
   switch (day) {
     case 1: // Monday
-      if (hour >= 8 && hour < 10) changeCourse(8, 10, "GST121");
+      if (hour >= 4 && hour < 10) changeCourse(4, 10, "GST121");
       else if (hour >= 13 && hour < 14) changeCourse(13, 14, "GET121");
       else if (hour >= 14 && hour < 16) changeCourse(14, 16, "CHM121");
       break;
@@ -338,22 +358,20 @@ function checkAttendanceState() {
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "MTH122");
       else if (hour >= 10 && hour < 12) changeCourse(10, 12, "PHY128");
       else if (hour >= 13 && hour < 15) changeCourse(13, 15, "GST121");
-      else if (hour >= 15 && hour < 17) changeCourse(15, 17, "STA121");
+      else if (hour >= 15 && hour < 22) changeCourse(15, 22, "LK");
       break;
     case 3: // Wednesday
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "MTH121");
       else if (hour >= 10 && hour < 12) changeCourse(10, 12, "CPE121");
-      else if (hour >= 15 && hour < 17) changeCourse(15, 17, "PHY121");
+      else if (hour >= 15 && hour < 20) changeCourse(15, 20, "PHY121");
       break;
     case 4: // Thursday
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "CHM123");
-      break;
-    case 5: // Friday
+    case 6: // Friday
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "PHY122");
       else if (hour >= 10 && hour < 14) changeCourse(
         10, 14, "CPE121");
-      else if (hour >= 13 && hour < 14) changeCourse(13, 14, "MTH122");
-      else if (hour >= 14 && hour < 16) changeCourse(14, 16, "GET121");
+      else if (hour >= 13 && hour < 20) changeCourse(13, 20, "TPP");
       break;
     default :
       alert('No classes today')
@@ -362,29 +380,39 @@ function checkAttendanceState() {
 }
 async function loadAttendance() {
   const isOnline = await isReallyOnline();
-  if (!isOnline) {
+  if (!navigator.onLine) {
     attView.classList.add('errorView');
-    attView.innerHTML = 'You are currently offline';
+    attView.innerHTML = `
+    <p style='display:flex;justify-content:center;align-items:center;gap:5px;'>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wifi-off-icon lucide-wifi-off"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></svg>
+      You are currently offline</p>`;
     return;
   }
-
+  if (!isOnline) {
+    attView.classList.add('errorView');
+    attView.innerHTML = `
+    <p style='display:flex;justify-content:center;align-items:center;gap:5px;'>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wifi-off-icon lucide-wifi-off"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></svg>
+      You're having a poor connectivity</p>`;
+    return;
+  }
   const dept = Department.textContent.trim();
-  const course = currentCourseDisplay.textContent.trim();
-  if (course === 'No class') {
+  const course = currentCourseDisplay.textContent.trim().toLowerCase();
+  if (course === 'no class') {
     attView.innerHTML = '<h3>No class yet!</h3>';
     return;
   }
 
   const date = getCurrentDate();
-  const collectionRef = collection(db, course, date, dept); // db/course/date/dept
+  const collectionRef = collection(db, course, date, dept); // /course/date/dept
 
   onSnapshot(collectionRef, (snapshot) => {
     if (snapshot.empty) {
-      attView.innerHTML = '<h3>No student marked yet</h3>';
+      attView.innerHTML = `<h3>No student marked yet</h3>`;
       return;
     }
 
-    attView.innerHTML = '<h2>Students who marked</h2>';
+    attView.innerHTML = `<h2>${dept} Students who marked</h2>`;
     let users = '';
     snapshot.forEach((doc) => {
       const data = doc.data();
@@ -395,9 +423,10 @@ async function loadAttendance() {
 }
 let reviewSt = false;
 attReview.addEventListener('click',async ()=>{
-  await loadAttendane();
+  await loadAttendance();
   attView.style.height = reviewSt ? '0em':'20em';
   attView.style.padding = reviewSt ? '0px':'10px 5px';
+  
   reviewSt = !reviewSt;
 }) ;
 
@@ -416,27 +445,58 @@ async function updateDeptDate(dept,date){
     console.error('Error from trying to update Department date: ',err);
   }
 }
-async function markAttendance(name, regNm, dept, course, date) {
+
+//attedance history function...
+async function attHistory(course, date, level, dept, reg) {
+  let arrHis = [];
+  const attDoc = doc(db, 'UNIUYO', level, dept, reg);
+
+  const his = await getDoc(attDoc);
+  if (his.exists()) {
+    arrHis = his.data().attH || [];
+    
+    // Keep max 30 history records
+    while (arrHis.length >= 30) {
+      arrHis.shift();
+    }
+  }
+
+  // Add new record
+  arrHis.push({ course, date });
+
+  // Save back to Firestore
+  await updateDoc(attDoc, { attH: arrHis });
+
+  // Save to localStorage (just a flag for now)
+  dtb.setItem('att-his-state', JSON.stringify(1));
+}
+
+async function markAttendance(name, regNm, dept, course, date,level) {
   const userObject = {
     name,
     regNm,
   };
   const reg = regNm.replace(/\//g,'-');
-  alert(reg);
+  const studPath = doc(db,'UNIUYO',level,dept,reg);
   const docRef = doc(db,course,date,dept,reg);
   const DeptPath = doc(db,course,date,'DP','deptList');
   try {
-    await setDoc(DeptPath,{
-      deptName:arrayUnion(dept)
-    },{merge:true});
-    await setDoc(docRef,userObject); 
-    await updateDeptDate(dept,date);
+    const result = await Promise.allSettled([
+      setDoc(DeptPath,{deptName:arrayUnion(dept)},{merge:true}),
+      setDoc(docRef,userObject),
+      updateDeptDate(dept,date),
+      attHistory(course,date,level,dept,reg)
+    ]);
+    
+    console.log(`result from all mark attend func :`,result);
+    
+    
     // ensures it creates or updates without overwriting other depts
     spinnerContainer.style.display ='none';
     setTimeout(() => {
       statusDisplay(true, 'Attendance submitted successfully! Thank you for using ADEX');
     }, 1000);
-
+  
   } catch (err) {
     spinnerContainer.style.display = 'none';
     setTimeout(() => {
@@ -455,7 +515,7 @@ async function getGeoLocsUI() {
   const [minLat, minLong, maxLat, maxLong] = coor;
 
   function getLocation() {
-!!!    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -502,22 +562,24 @@ async function getGeoLocsUI() {
 }*/
 
 async function batchMarkAttendance(studentList, course, date) {
-  const batch = writeBatch(db);
+  const batch = writeBatch();
 
-  studentList.forEach(({ name, regNm, dept }) => {
+  studentList.forEach(async ({ name, regNm, dept,level }) => {
     if (!name || !regNm || !dept) {
       console.warn("Skipping invalid student record:", { name, regNm, dept });
       return;
     }
-    const docRef = doc(db,course,date,dept,regNm);
+    const reg = regNm.replace(/\//g,'-');
+    const docRef = doc(db,course,date,dept,reg);
     const userObject = { name, regNm };
-
+    await attHistory(course,date,level,dept,reg);
     batch.set(docRef,userObject);
   });
 
   try {
     await batch.commit();
     console.log("✅ Batch attendance submitted");
+    statusDisplay(true,'ADEX has synced your attendance');
   } catch (err) {
     console.error("❌ Batch submission failed:", err.message);
   }
@@ -530,7 +592,7 @@ function storeWarn(lockState,lockStateTime,lockStateDate){
     lockStateTime,
     lockStateDate
   };
-  const request = indexedDB.open('warnDB');
+  const request = indexedDB.open('warn');
   request.onupgradeneeded = function(e){
     const DB = e.target.result;
     if(!DB.objectStoreNames.contains('warn')){
@@ -544,9 +606,11 @@ function storeWarn(lockState,lockStateTime,lockStateDate){
     const storeRequest = store.put(lockObj,'currentLock');
     storeRequest.onsuccess = (e)=>{
       console.log('successfully updated Warn database');
+      DB.close();
     }
     storeRequest.onerror = (e)=>{
       console.error('error from updating warn database ',err);
+      DB.close();
     }
   }
   request.onerror = (e)=>{
@@ -554,7 +618,7 @@ function storeWarn(lockState,lockStateTime,lockStateDate){
   }
 }
 
-async function updateWarnDBOnline() {
+async function updateWarnOnline() {
   const level = stdUser.level;
   const dept = stdUser.dept;
   const regNm = stdUser.regNm;
@@ -584,7 +648,7 @@ async function updateWarnDBOnline() {
     }
   });
 }
-function updateWarnDB(DB){
+function updateWarn(DB){
   const lockObj = {
     lockState : 0,
     lockStateTime : 0,
@@ -595,10 +659,10 @@ function updateWarnDB(DB){
   const warnDatabaseAction = warnDatabase.put(lockObj,'currentLock');
   warnDatabaseAction.onsuccess = ()=>{
     enableMarkButton(true);
-    console.log('successful updated warnDB...offline');
+    console.log('successful updated warn...offline');
   }
   warnDatabaseAction.onerror = (e)=>{
-    console.log('Error trying to update warnDB :',e.target.error)
+    console.log('Error trying to update warn :',e.target.error)
   }
 }
 
@@ -621,7 +685,7 @@ async function warn(student) {
   const dept = stdUser.dept;
   const regNm = stdUser.regNm;
   console.log(stdUser);
-  const reg = regNm.replace('/','-');
+  const reg = regNm.replace(/\//g,'-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
 
   try {
@@ -640,22 +704,7 @@ async function warn(student) {
       const lockDate = stdDoc.data().stdObj.lockStateDate;
       storeWarn(lockNum,lockTime,lockDate);
       
-      const request = indexedDB.open('warnDB');
-      request.onupgradeneeded = function(e){
-        const DB = e.target.result;
-        if(!DB.objectStoreNames.contains('warn')){
-          DB.createObjectStore('warn');
-        };
-      }
-      request.onsuccess = function(e){
-        const DB = e.target.result;
-        const syncInterval = setInterval(() => {
-          checkDisability(DB,syncInterval);
-        }, 10000);
-      }
-      request.onerror = (e)=>{
-        console.error('error trying to upgrade Warn database :',e.target.error);
-      }
+      await checkDisability();
       return;
     }
     await updateDoc(docm, {
@@ -664,71 +713,77 @@ async function warn(student) {
       'stdObj.lockStateDate': new Date().toISOString().slice(0,10),
     });
     
-    
-
     console.log('✅ Student lock state updated.');
   } catch (err) {
     console.error('⚠️ Error trying to warn student:', err.message);
   }
 }
 
-function verifyOffline(db, callback,callback2) {
-  const tx = db.transaction('warn', 'readonly');
-  const store = tx.objectStore('warn');
-  const getLockObj = store.get('currentLock');
+function verifyOffline() {
+  const request = indexedDB.open('warn');
+  request.onupgradeneeded = function(e){
+    const DB = e.target.result;
+    if(!DB.objectStoreNames.contains('warn')){
+      DB.createObjectStore('warn');
+    };
+  }
+  request.onsuccess = function(e){
+    const DB = e.target.result;
+    const tx = DB.transaction('warn', 'readonly');
+    const store = tx.objectStore('warn');
+    const getLockObj = store.get('currentLock');
 
-  getLockObj.onsuccess = function () {
-    const result = getLockObj.result;
+    getLockObj.onsuccess = function () {
+      const result = getLockObj.result;
 
-    if (!result) {
-      console.log('No lock data found');
-      return;
-    }
-
-    const { lockState, lockStateTime, lockStateDate } = result;
-
-    if (lockState === 0) {
-      console.log('it f*cking works!');
-      clearInterval(callback);
-      if(callback2){
-        clearInterval(callback2);
+      if (!result) {
+        console.log('No lock data found');
+        DB.close();
+        return;
       }
-      return;
-    }
 
-    console.log('from offline :', result);
-
-    const currentDate = new Date().toISOString().slice(0, 10);
-    if (currentDate !== lockStateDate) {
-      updateWarnDB(db);
-      clearInterval(callback);
-      if(callback2){
-        clearInterval(callback2);
-      }
-      return;
-    }
-
-    let currentTime = getTimeInSecs();
-    const diff = (parseInt(currentTime) - parseInt(lockStateTime)) / 1800;
-
-    if (diff >= 1) {
-      updateWarnDB(db);
-      clearInterval(callback);
-      if(callback2){
-        clearInterval(callback2);
-      }
-      return;
-    }
-
-    enableMarkButton(false);
-  };
-
-  getLockObj.onerror = function (e) {
-    console.error('Error reading from warnDB:', e.target.error);
-  };
-}
-async function verifyOnline(callback){
+      const { lockState, lockStateTime, lockStateDate } = result;
   
+      if (lockState === 0) {
+        console.log('it f*cking works!');
+        DB.close();
+        return;
+      }
+
+      console.log('from offline :', result);
+
+      const currentDate = new Date().toISOString().slice(0, 10);
+      if (currentDate !== lockStateDate) {
+        updateWarn(DB);
+        DB.close();
+        return;
+      }
+
+      let currentTime = getTimeInSecs();
+      const diff = parseInt(currentTime) - parseInt(lockStateTime);
+      if(diff >= 1800){
+        updateWarn(DB);
+        DB.close();
+        return;
+      }
+      const difff = parseInt(lockStateTime) + 1800 - diff + 10;
+      setTimeout(()=>{
+        checkDisability()
+      },difff);
+      enableMarkButton(false);
+    };
+
+    getLockObj.onerror = function (e) {
+      console.error('Error reading from warn:', e.target.error);
+      DB.close();
+    };
+  }
+  request.onerror = (e)=>{
+    console.error('error trying to upgrade Warn database :',e.target.error);
+  }
+}
+async function verifyOnline(){
+  console.log('running check');
   let level = stdUser.level;
   let dept = stdUser.dept;
   let regNm = stdUser.regNm;
@@ -738,46 +793,49 @@ async function verifyOnline(callback){
     const userSnapData = await getDoc(docm);
     if(!userSnapData.exists()){
       alert('pls check INTERNET connection and reload app.If error presist then your account is not found on our database an this may result to issues...pls resolve to contact ADEX');
-      clearInterval(callback);
       return;
     } 
     const { lockState,lockStateTime,lockStateDate } = userSnapData.data().stdObj;
     if(lockState === 0){
       console.log('online fetched successful but lock is 0, acct enabled successfully!');
-      await updateWarnDBOnline();
-      clearInterval(callback);
+      await updateWarnOnline();
       return;
     }
     console.log('from online',userSnapData.data().stdObj);
     const currentDate = new Date().toISOString().slice(0,10);
     if(currentDate !== lockStateDate ){
-      await updateWarnDBOnline();
-      return clearInterval(callback);
+      await updateWarnOnline();
+      return;
     }
     let currentTime = getTimeInSecs();
-    const diff = (parseInt(currentTime) - parseInt(lockStateTime))/1800;
-    if(diff >= 1){
-      await updateWarnDBOnline();
-      return clearInterval(callback);
+    const diff = parseInt(currentTime) - parseInt(lockStateTime);
+    if(diff >= 1800){
+      await updateWarnOnline();
+      return;
     }
+    storeWarn(lockState,lockStateTime,lockStateDate);
     enableMarkButton(false);
+    const difff = parseInt(lockStateTime) + 1800 - diff + 10;
+    setTimeout(()=>{
+      checkDisability()
+    },difff);
   }catch(err){
     console.log('Error from verifyOnline :',err.message);
   }
 }
 
-function checkDisability(db,callback,callback2){
-  isReallyOnline().then(async (online)=>{
-    try{
-      if(online){
-        await verifyOnline(callback);
-      }else{
-        verifyOffline(db,callback,callback2);
-      }
-    }catch(err){
-      console.log('Error from checkDisability: ',err.message)
+async function checkDisability(){
+  try{
+    const isOnline = await isReallyOnline();
+    if(isOnline){
+      await verifyOnline();
+      verifyOffline();
+    }else{
+      verifyOffline();
     }
-  })
+  }catch(err){
+    console.log('Error from checkDisability: ',err.message)
+  }
 }
 
 async function verifyStudentsPortal(student,course,date){
@@ -786,6 +844,7 @@ async function verifyStudentsPortal(student,course,date){
   try{
     const result = await getDoc(docm);
     if(!result.exists()){
+      console.log('im here');
       return { state : false };
     }
     const fetched = result.data()[`${course}_${date}`];
@@ -793,7 +852,7 @@ async function verifyStudentsPortal(student,course,date){
       return { state : false };
     }
     const output = fetched[fetched.length - 1];
-    console.log(output);
+    console.log('output : ',output);
     if(!output.startTime || !output.endTime){
       return {state : false};
     }
@@ -812,7 +871,7 @@ async function verifyStudentsPortal(student,course,date){
   }
 }
 
-async function markPortal(output,name,regNm,department,course,date,student){
+async function markPortal(output,name,regNm,department,course,date,student,level){
   
   try{
     switch(output.state){
@@ -821,7 +880,7 @@ async function markPortal(output,name,regNm,department,course,date,student){
       case 'Time_past':
         return alert('Portal has already been CLOSED...pls meet with the class Rep or ADEX to show you were present in class!');
       case true:
-        return markAttendance(name,regNm,department,course,date);
+        return await markAttendance(name,regNm,department,course,date,level);
     }
   }catch(err){
     console.log('Error from markPortal :',err.message);
@@ -833,12 +892,13 @@ async function markPortal(output,name,regNm,department,course,date,student){
 markBt.addEventListener('click',async (e)=>{
   e.preventDefault();
   
+  const level = stdUser.level;
   const name = (Name.textContent.trim() !== 'USER NAME')? Name.textContent.trim() : false;
   const regNm =  (RegNM.textContent.trim() !== 'USER_REG NUMBER') ? RegNM.textContent.trim() : false;
   const department = (Department.textContent.trim() !== 'Department') ? Department.textContent.trim() : false;
   let cours = (currentCourseDisplay.textContent.trim() !== 'No class') ? currentCourseDisplay.textContent.trim() : false;
   
-  if(!name || !regNm || !department || !cours) return alert('All ADEX field must be filled!');
+  if(!name || !regNm || !cours || !department || !level) return alert('All ADEX field must be filled!');
 
   const course = cours.replace(/\s+/g, '').toUpperCase();
   
@@ -866,13 +926,14 @@ markBt.addEventListener('click',async (e)=>{
     const internet = await isReallyOnline();
     if(internet){
       const output = await verifyStudentsPortal(student,course,dateSlash);
-      await markPortal(output,name,regNm,department,course,date,student);
+      console.log('output.state: ',output.state);
+      await markPortal(output,name,regNm,department,course,date,student,level);
       spinnerContainer.style.display = 'none';
       return;
     } 
     
     spinnerContainer.style.display = 'none';
-    syncAttendanceData(name,regNm,department,course,date,dateSlash,student);
+    syncAttendanceData(name,regNm,department,course,date,dateSlash,student,level);
   }catch(err){
     spinnerContainer.style.display = 'none';
     console.log('Error checking internet connection',err);
@@ -882,7 +943,7 @@ markBt.addEventListener('click',async (e)=>{
 })
 
 //Attendance marking offline...
-function syncAttendanceData(name, reg, dept, course, date,dateSlash,student) {
+function syncAttendanceData(name, reg, dept, course, date,dateSlash,student,level) {
   const userConsent = confirm("No internet connection detected. Do you want to continue with offline attendance? Your data will be synced later.");
 
   if (!userConsent) {
@@ -890,54 +951,54 @@ function syncAttendanceData(name, reg, dept, course, date,dateSlash,student) {
     return;
   }
 
-  const offlineUser = { name, regNm: reg, dept, course, date, dateSlash,student};
+  const offlineUser = { name, regNm: reg, dept, course, date, dateSlash,student,level};
 
-  const request = indexedDB.open('adexDBrecord', 1);
+  const request = indexedDB.open('adexrecord', 1);
 
   request.onupgradeneeded = function (event) {
-    const db = event.target.result;
-    if (!db.objectStoreNames.contains('att-records')) {
-      db.createObjectStore('att-records', {
+    const DB = event.target.result;
+    if (!DB.objectStoreNames.contains('att-records')) {
+      DB.createObjectStore('att-records', {
         keyPath : "id",
         autoIncrement: true });
     }
   };
 
   request.onsuccess = function (event) {
-    const db = event.target.result;
+    const DB = event.target.result;
 
     // Important: Ensure the object store exists before transaction
-    if (!db.objectStoreNames.contains('att-records')) {
+    if (!DB.objectStoreNames.contains('att-records')) {
       console.error("Object store not found.");
       statusDisplay(false, "Database not ready yet. Try again.");
       return;
     }
 
-    const tx = db.transaction('att-records', 'readwrite');
+    const tx = DB.transaction('att-records', 'readwrite');
     const store = tx.objectStore('att-records');
     store.add(offlineUser);
     statusDisplay(true, "Offline attendance saved and will sync automatically.");
 
     // Trigger syncing every 3 seconds
     const syncInterval = setInterval(() => {
-      trySyncStoredAttendance(db, syncInterval);
+      trySyncStoredAttendance(DB, syncInterval);
     }, 3000);
   };
 
   request.onerror = function (event) {
-    console.error("Error opening IndexedDB:", event.target.error);
+    console.error("Error opening Indexed:", event.target.error);
     statusDisplay(false, "Failed to save offline data.");
   };
 }
-function deleteAdexDB() {
-  const deleteRequest = indexedDB.deleteDatabase('adexDBrecord');
+function deleteAdex() {
+  const deleteRequest = indexedDB.deleteDatabase('adexrecord');
 
   deleteRequest.onsuccess = function () {
-    console.log("adexDB successfully deleted.");
+    console.log("adex successfully deleted.");
   };
 
   deleteRequest.onerror = function (event) {
-    console.error("Error deleting adexDB:", event.target.error);
+    console.error("Error deleting adex:", event.target.error);
     alert("Failed to delete offline attendance data.");
   };
 
@@ -948,11 +1009,11 @@ function deleteAdexDB() {
 }
 
 //syncing data on internet connection...
-function trySyncStoredAttendance(db, interval) {
+function trySyncStoredAttendance(DB, interval) {
   isReallyOnline().then(async (online) => {
     if (!online) return;
 
-    const tx = db.transaction('att-records', 'readwrite');
+    const tx = DB.transaction('att-records', 'readwrite');
     const store = tx.objectStore('att-records');
     const getAllRequest = store.getAll();
 
@@ -961,12 +1022,13 @@ function trySyncStoredAttendance(db, interval) {
 
       if (!records.length) {
         clearInterval(interval);
+        DB.close();
         console.log('cleared interval for attendance syncing');
         return;
       }
 
       try {
-        if (records.length >= 1) {
+        if (records.length >= 5) {
           // Group by course and date for batching
           const grouped = {};
           for(const r of records){
@@ -977,7 +1039,8 @@ function trySyncStoredAttendance(db, interval) {
               grouped[key].push(r);
               console.log('marked', r.course);
             }
-            console.log('did not ',r.course)
+            console.log(`${r.course} was not mark as we found invalid data`);
+            statusDisplay(false,`Attendance for ${r.course} date: ${r.dateSlash} was not marked!`);
           };
           
           if(Object.keys(grouped).length <= 0){
@@ -992,13 +1055,31 @@ function trySyncStoredAttendance(db, interval) {
           // Less than 5: sync individually
           for (const record of records) {
             const output = await verifyStudentsPortal(record.student,record.course, record.dateSlash);
-            await markPortal(output,record.name, record.regNm, record.dept, record.course, record.date);
+            if(output.state){
+              const name = record.name;
+              const regNm = record.regNm;
+              const course = record.course;
+              const date = record.date;
+              const userObject = {name,regNm};
+              const reg = regNm.replace(/\//g,'-');
+              const docRef = doc(db,course,date,record.dept,reg);
+              const studPath = doc(db,'UNIUYO',record.level,record.dept,reg);
+              
+              await Promise.allSettled([
+                setDoc(docRef,userObject),
+                attHistory(course,date,record.level,record.dept,reg)
+              ]);
+              console.log('marked', record.course);
+            }
+            console.log(`${record.course} was not mark as we found invalid data`);
+            statusDisplay(false,`Attendance for ${record.course} date: ${record.dateSlash} was not marked!`);
           }
           clearInterval(interval);
+          statusDisplay(true,'ADEX has sync your attendance');
         }
-        db.close();
+        DB.close();
         // Clear records after successful sync
-        deleteAdexDB();
+        deleteAdex();
 
       } catch (err) {
         console.error("Sync failed:", err.message);
@@ -1007,7 +1088,8 @@ function trySyncStoredAttendance(db, interval) {
     };
 
     getAllRequest.onerror = function () {
-      console.error("Failed to read from IndexedDB during sync.");
+      DB.close();
+      console.error("Failed to read from Indexed during sync.");
     };
   });
 }

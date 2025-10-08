@@ -16,7 +16,7 @@
       width: 100%;
       min-height: 100vh;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to bottom, #021a14, #0a3c2a, #048d6b);
+      background: radial-gradient(circle at top right, black, #172714);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -30,13 +30,16 @@
       width: 90%;
       max-width: 400px;
       padding: 18px;
-      background: #ffffff;
-      color: #048d6b;
+      background: black;
+      color: #058d04;
       font-size: 2.4em;
       font-weight: 800;
       border-radius: 15px;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 8px #87fc9d;
+    }
+    .shadow{
+      -webkit-box-reflect: below -15px linear-gradient(transparent, rgba(0, 0, 0, 0.3));
     }
 
     .container {
@@ -49,15 +52,15 @@
       flex-direction: column;
       align-items: center;
       gap: 35px;
-      border: 2px solid #87fcdf;
+      border: 2px solid gray;
       box-shadow: 0 5px 30px rgba(0,0,0,0.5);
     }
 
     .container h2 {
       font-size: 2em;
       font-weight: 700;
-      color: #87fcdf;
-      text-shadow: 0 0 8px #048d6b;
+      color: #87fc8a;
+      text-shadow: 0 0 8px #048d0e;
     }
 
     .img-div {
@@ -65,7 +68,6 @@
       height: 130px;
       border-radius: 50%;
       overflow: hidden;
-      border: 3px solid #87fcdf;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
     }
 
@@ -81,7 +83,7 @@
       padding: 12px 0;
       font-size: 1.3em;
       font-weight: bold;
-      background: linear-gradient(90deg, #048d6b, #87fcdf, #048d6b);
+      background: linear-gradient(90deg, #048d16, #87fc9f, #048d12);
       background-size: 300% 100%;
       color: #ffffff;
       border: none;
@@ -96,7 +98,7 @@
       transform: translateY(-4px);
     }
 
-    @keyframes b;utton {
+    @keyframes button {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
@@ -125,7 +127,7 @@
     .spinner {
       width: 40px;
       height: 40px;
-      border: 4px solid #87fcdf;
+      border: 4px solid #87fc8d;
       border-top-color: #ffffff;
       border-radius: 50%;
       animation: spin 1s linear infinite;
@@ -134,7 +136,7 @@
     .navigator {
       font-size: 1em;
       font-weight: bold;
-      color: #87fcdf;
+      color: #87fc9a;
     }
 
     @keyframes spin {
@@ -143,17 +145,17 @@
 
     .footer a {
       text-decoration: none;
-      color: #87fcdf;
+      color: #8ffc87;
       font-weight: bold;
     }
   </style>
 </head>
 
 <body>
-  <h2 class="title">ADEX</h2>
+  <div class="title" data-text="ADEX"><p class="shadow">ADEX</p></div>
   <div class="container">
     <div class="img-div">
-      <img src="AdexImg.jpg" alt="ADEX">
+      <img src="Adeximge.jpg" alt="ADEX">
     </div>
     <h2>Welcome to ADEX</h2>
     <button class="acct-but">Create Account</button>
@@ -161,7 +163,6 @@
   <div class="footer">
     Already have an account? <a href="ADEXlogin.html">Log in</a>
   </div>
-  div
   
   <div id="spinner">
     <div class="spinner-container" >
@@ -170,11 +171,69 @@
     <p class="navigator">Loading...</p>
   </div>
   
+  <!-- Firebase and app logic -->
+    <!-- Install Button -->
+  <button id="installButton" style="display: none; position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Install ADEX
+  </button>
+  <script>
+    // Handle PWA installation
+    let deferredPrompt;
+    const installButton = document.getElementById('installButton');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installButton.style.display = 'block';
+    });
+
+    installButton.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+          installButton.style.display = 'none';
+        });
+      }
+    });
+
+    // Optionally, hide the install button if the app is already installed
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA was installed');
+      installButton.style.display = 'none';
+    });
+  </script>
   <script type="module">
     import { auth, db } from './firebaseConfig.js';
     import { getDocs, collection } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
     import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
-
+    const DB = window.localStorage;
+    function deleteData(dbName){
+      let requestDel = indexedDB.deleteDatabase(dbName);
+      requestDel.onsuccess = (e)=>{
+        console.log(`from deleteData fun successfully deleted ${dbName}`)
+      }
+      
+      requestDel.onerror = (err)=>{
+        console.error(`error from deleteData fun trying to delete ${dbName} ${requestDel.error} `)
+      }
+      
+      requestDel.onblocked = ()=>{
+        console.log(`delete from deleteData fun is blocked -maybe ${dbName} is still open in another tab`);
+      }
+    }
+    document.addEventListener('DOMContentLoaded',()=>{
+      console.log('now running ');
+      deleteData('adexUsers');
+      deleteData('adexusers');
+      console.log('finished running');
+    });
+    
     const spin = document.getElementById('spinner');
     const navig = document.querySelector('.navigator');
     const createBut = document.querySelector('.acct-but');
@@ -182,14 +241,17 @@
     function showSpinner(message) {
       navig.textContent = message;
       spin.style.display = 'flex';
+      createBut.disabled = true;
     }
 
     function hideSpinner() {
       spin.style.display = 'none';
+      createBut.disabled = false;
     }
     
     function storeUser(userObj) {
-      const request = indexedDB.open('adexUsers', 1);
+      DB.setItem('currentUser',JSON.stringify(Array.from(Object.entries(userObj))));
+      const request = indexedDB.open('AdexUsers',2);
       request.onupgradeneeded = function (e) {
         const db = e.target.result;
         if (!db.objectStoreNames.contains('users')) {
@@ -201,11 +263,21 @@
         const tx = db.transaction('users', 'readwrite');
         const store = tx.objectStore('users');
         const addUser = store.put(userObj, 'currentUser');
+        
         addUser.onsuccess = () => {
-          console.log('User saved in IndexedDB');
+          console.log('User saved in IndexedDB and localStorage successfully');
           setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
         };
+        addUser.onerror = (e)=>{
+          
+          console.log('An error occured trying to add to IndexedDB but data successfully saved to localStorage',e.target.error);
+        }
+        db.close();
       };
+      request.onerror = (e)=>{
+        
+        console.log('onupgradeneeded error occured but data successfully saved to localStorage',e.target.error);
+      }
     }
 
     async function checkUserEmailPresent(user) {
@@ -248,17 +320,79 @@
         if (err.code === 'auth/popup-closed-by-user') {
           alert("You closed the popup. Try again.");
         } else {
-          alert("Error: " + err.message);
+          console.log('Error from create acct button click :',err.message);
+          alert("Oops your internet connection is bad");
         }
       }
     });
     
+    function addUserToIndexedDB() {
+      const request = indexedDB.open('AdexUsers', 2); // 👈 bump version to force upgrade
+
+      request.onupgradeneeded = function (event) {
+        const db = event.target.result;
+
+        if (!db.objectStoreNames.contains('users')) {
+          db.createObjectStore('users'); // 👈 create object store here
+          console.log('Object store "users" created');
+        }
+      };
+
+      request.onsuccess = function (event) {
+        const db = event.target.result;
+
+        const transaction = db.transaction('users', 'readwrite');
+        const store = transaction.objectStore('users');
+        const obj = {
+          name : 'Danni',
+          regNm : '24',
+          dept:'Computer Engineer',
+          stdObj:{
+            lock:2,
+          }
+        };
+        store.put(obj,'currentUser') ;
+        DB.setItem('currentUser',JSON.stringify(obj));
+        console.log('local created successfully');
+    /*const rep = store.get('currentUser');
+    rep.onsuccess = ()=>{
+      console.log(rep.result);
+    }
+    rep.onerror = ()=>{
+      console.log(rep.error);
+    }*/
+    
+        transaction.oncomplete = () => {
+          db.close();
+          console.log("User added successfully.");
+        };
+
+        transaction.onerror = () => {
+          console.error("Error adding user:", transaction.error);
+        };
+      };
+
+      request.onerror = function () {
+        console.error("Error opening database:", request.error);
+      };
+    }
+    
     // Auto-login if already in IndexedDB
     function autoLoginIfStored() {
-      const request = indexedDB.open('adexUsers', 1);
+      const local = DB.getItem('currentUser') ;
+      const localResult = local ? JSON.parse(local) : {};
+      console.log(localResult);
+      const request = indexedDB.open('AdexUsers',2);
+      request.onupgradeneeded = (e)=>{
+        const db = e.target.result;
+        if(!db.objectStoreNames.contains('users')){
+          db.createObjectStore('users');
+          console.log('users created successfully')
+        }
+      }
       request.onsuccess = function (e) {
         const db = e.target.result;
-        if (!db.objectStoreNames.contains('users')) return;
+        if (!db.objectStoreNames.contains('users') && !localResult) return console.log('users not found!');
         const tx = db.transaction('users', 'readonly');
         const store = tx.objectStore('users');
         const getUser = store.get('currentUser');
@@ -266,13 +400,41 @@
         getUser.onsuccess = () => {
           if (getUser.result) {
             showSpinner(`${getUser.result.name || 'User'} logging in...`);
-            setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
+            console.log(getUser.result);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+            
           }
+          else if(localResult){
+            showSpinner(`${localResult.name || 'User'} logging in...`);
+            console.log(localResult);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+          }
+          db.close();
         };
+        getUser.onerror = (e)=>{
+          if(localResult){
+            showSpinner(`${localResult.name || 'User'} logging in...`);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+            console.log('error occur in indexedDB...fetch data from local');
+          }else{
+            console.log('error occur in indexedDB');
+            return;
+          }
+          db.close();
+        }
       };
+      request.onerror = (e)=>{
+        if(localResult){
+          showSpinner(`${localResult.name || 'User'} logging in...`);
+          setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+          console.log('onupgradeneeded error occur ..but fetched successfully from localStorage');
+          return;
+        }
+        console.log('onupgradeneeded error occured');
+      }
     }
-
+    
     //autoLoginIfStored();
   </script>
 </body>
-  </html>
+</html>

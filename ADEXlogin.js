@@ -8,11 +8,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
 // DOM elements
+const DB = window.localStorage;
 const loginButton = document.getElementById('loginForm');
 const RegNM = document.getElementById('regNm');
 //const Department = document.getElementById('department');
-const Email = document.getElementById('email');
-//const Password = document.getElementById('passwordInput');
 const spin = document.querySelector('.spinner-container');
 const messager = document.querySelector('.messager');
 
@@ -49,71 +48,71 @@ function standardizeRegNumber(regNumber) {
   return regNumber.replace(pattern, '/').replace(/\/+/g, '/');
 }
 
-// IndexedDB storage
-/*function storeUser(user) {
-  const request = indexedDB.open("adexDB", 1);
-
-  request.onupgradeneeded = event => {
-    const db = event.target.result;
-    if (!db.objectStoreNames.contains("users")) {
-      db.createObjectStore("users");
-    }
+function displayDeptfromReg(reg){
+  const depath = `${reg.split('/')[1]}${reg.split('/')[2]}`;
+  const objDept = {
+    'EGCO':'COMPUTER_ENGINEERING',
+    'EGCV':'CIVIL_ENGINEERING',
+    'EGCE':'CHEMICAL_ENGINEERING',
+    'EGEE':'ELECTRICAL_AND_ELECTRONICS_ENGINEERING',
   };
-
-  request.onsuccess = event => {
-    const db = event.target.result;
-    const tx = db.transaction("users", "readwrite");
-    tx.objectStore("users").put(user, "currentUser");
-
-    tx.oncomplete = () => db.close();
-    tx.onerror = () => {
-      statusDisplay(false, "Failed to store user.");
-      db.close();
-    };
-  };
-
-  request.onerror = event => {
-    statusDisplay(false, `IndexedDB error: ${event.target.error}`);
-  };
-}*/
+  
+  return objDept[depath];
+}
 
 // Correct user lookup
-async function findUserInFirestore(email, regNm) {
-  const levels = ['100', '200', '300', '400', '500'];
+async function findUserInFirestore(regNm) {
   const reg = regNm.replace(/\//g,'-');
-  for(const level of levels){
-    const docm = doc(db,'EmailIndex',level,email,reg);
-    try{
-      const user = await getDoc(docm);
-      if(user.exists()){
-        return user.data();
-      }
-    }catch(err){
-      console.error('error finding user',err.message);
+  const dept = displayDeptfromReg(regNm);
+  const year = regNm.split('/')[0];
+  const docm = doc(db,'UNIUYO',year,dept,reg);
+  try{
+    const user = await getDoc(docm);
+    if(user.exists()){
+      return user.data();
     }
+  }catch(err){
+    console.error('error finding user',err.message);
   }
   return false;
 }
 
 function clearUserData() {
-  const request = indexedDB.open('adexUsers', 1);
+  DB.removeItem('att-his');
+  DB.removeItem('att-his-state');
+  let request = indexedDB.deleteDatabase('AdexUsers');
+  request.onblock = ()=>{
+    console.log('failed to delete ...pls make sure to close all tabs concerning ADEX before proceeding ')
+  }
   request.onsuccess = function (event) {
-    const db = event.target.result;
-    if (db.objectStoreNames.contains('users')) {
-      const tx = db.transaction('users', 'readwrite');
-      tx.objectStore('users').clear();
-      tx.oncomplete = () => db.close();
-      console.log('Old user cleared');
-    }
+    console.log('successfully cleared previous user')
   };
+  request.onerror = ()=>{
+    console.error('an error occurred trying to clear db',request.error );
+  }
+  
+  let request2 = indexedDB.deleteDatabase('warn');
+  request2.onblock = ()=>{
+    console.log('failed to delete ...pls make sure to close all tabs concerning ADEX before proceeding ')
+  }
+  request2.onsuccess = function (event) {
+    console.log('successfully cleared previous warn')
+  };
+  request2.onerror = ()=>{
+    console.error('an error occurred trying to clear db',request2.error );
+  }
 }
+
 //function for adding current user to database...
 function addUserToIndexedDB(userObj) {
-  const request = indexedDB.open('adexUsers', 1);
+  DB.setItem('currentUser',JSON.stringify(userObj));
+  console.log('added data to localStorage');
+  const request = indexedDB.open('AdexUsers',2);
   request.onupgradeneeded = function (event) {
     const db = event.target.result;
     if (!db.objectStoreNames.contains('users')) {
       db.createObjectStore('users');
+      console.log('onupgradeneeded successful');
     }
   };
   request.onsuccess = function (event) {
@@ -123,6 +122,10 @@ function addUserToIndexedDB(userObj) {
     tx.oncomplete = () => db.close();
     console.log('New user added');
   };
+  request.onerror = ()=>{
+    console.error('an error occurred trying to add User to IndexedDB db',request.error );
+    db.close();
+  }
 }
 
 //network function
@@ -151,17 +154,15 @@ loginButton.addEventListener('submit', async (e) => {
   spin.style.display = 'block';
   //const department = Department.value.trim();
   const regNm = standardizeRegNumber(RegNM.value.trim().toUpperCase());
-  const email = Email.value.trim().toLowerCase();
-  //const password = Password.value.trim();
 
-  if (!regNm || !email) {
+  if (!regNm) {
     spin.style.display = 'none';
-    return statusDisplay(false, "All fields are required.");
+    return statusDisplay(false, "Registration number is required.");
   }
 
   try {
 
-    const userData = await findUserInFirestore(email, regNm);
+    const userData = await findUserInFirestore(regNm);
 
     if (!userData) {
       spin.style.display = 'none';
@@ -170,14 +171,14 @@ loginButton.addEventListener('submit', async (e) => {
       return window.location.href = 'index.html';
     }
 
-    if (userData.email === email && userData.regNm === regNm) {
+    if (userData.regNm === regNm) {
       clearUserData(); // clear previous user
       addUserToIndexedDB(userData); // add current user
       //storeUser(userData) your existing backup store (if needed)
 
       spin.style.display = 'none';
       statusDisplay(true, 'Login successful!');
-      setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
+      setTimeout(() => window.location.href = 'V3ADEX.html', 1500);
     }else {
       spin.style.display = 'none';
       statusDisplay(false, 'Credentials do not match our records.');
@@ -195,4 +196,3 @@ footer.addEventListener('click',()=>{
   clearUserData();
   window.location.href = 'index.html';
 })
-
