@@ -81,7 +81,6 @@ vite.config.ts.timestamp*
 
 # Uploaded files
 uploads/
-*.jpg
 *.jpeg
 *.png
 *.gif

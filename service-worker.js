@@ -1,4 +1,4 @@
-const CACHE_NAME = 'adex-cache-v1';
+const CACHE_NAME = 'adex-cache-v2';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
@@ -16,7 +16,7 @@ const FILES_TO_CACHE = [
   '/review.js',
   '/firebaseConfig.js',
   '/V3ADEX.css',
-  '/AdexImg.jpg',
+  '/ADEXimge.jpg',
   '/icon.png',
   '/icon-192.png',
   '/icon-512.png',
