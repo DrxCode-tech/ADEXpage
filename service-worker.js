@@ -18,6 +18,7 @@ const FILES_TO_CACHE = [
   '/firebaseConfig.js',
   '/V3ADEX.css',
   '/ADEXimge.jpg',
+  '/ADEXige.jpg',
   '/icon.png',
   '/icon-192.png',
   '/icon-512.png',
