@@ -14,6 +14,7 @@ const FILES_TO_CACHE = [
   '/ADEXreset.js',
   '/V3ADEX.js',
   '/review.js',
+  '/attH.html',
   '/firebaseConfig.js',
   '/V3ADEX.css',
   '/ADEXimge.jpg',
