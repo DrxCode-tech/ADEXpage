@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offline - DrxCode Tech</title>
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #f4f7fb;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #0078ff;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      color: #555;
+    }
+
+    button {
+      background: #0078ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background: #005fcc;
+    }
+
+    img {
+      width: 120px;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <img src="icon-192.png" alt="DrxCode Icon">
+  <h1>You’re Offline</h1>
+  <p>It looks like you’re not connected to the internet.<br>
+  Don’t worry — you can still access cached pages.</p>
+  <button onclick="window.location.reload()">🔄 Try Again</button>
+</body>
+</html>
