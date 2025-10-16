@@ -162,7 +162,7 @@ window.addEventListener('DOMContentLoaded',async () => {
   let cancelState = false;
   const sideBar = document.querySelector('.nav-bar');
   document.querySelector('.menu').addEventListener('click',()=>{
-    sideBar.style.width = !cancelState ? '40%' : '0%';
+    sideBar.style.width = !cancelState ? '55%' : '0%';
     cancelState = !cancelState;
   })
   const request = indexedDB.open('AdexUsers',2);
