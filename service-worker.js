@@ -1,8 +1,9 @@
-const CACHE_NAME = 'adex-cache-v2';
+const CACHE_NAME = 'adex-cache-v3';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
   '/ADEXsign.html',
+  '/offline.html',
   '/ADEXlogin.html',
   '/ADEXpasswordReset.html',
   '/aboutADEX.html',
