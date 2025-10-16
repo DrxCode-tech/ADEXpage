@@ -744,7 +744,7 @@ function verifyOffline() {
 
       const { lockState, lockStateTime, lockStateDate } = result;
   
-      if (lockState === 0) {
+      if (lockState < 0) {
         console.log('it f*cking works!');
         DB.close();
         return;
@@ -796,7 +796,7 @@ async function verifyOnline(){
       return;
     } 
     const { lockState,lockStateTime,lockStateDate } = userSnapData.data().stdObj;
-    if(lockState === 0){
+    if(lockState < 3){
       console.log('online fetched successful but lock is 0, acct enabled successfully!');
       await updateWarnOnline();
       return;
