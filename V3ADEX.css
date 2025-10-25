@@ -8,9 +8,10 @@
 }
 
 html, body {
+  width: 100%;
   margin: 0;
-  padding: 0;
-  background: var(--bodyBG);
+  padding: 5px;
+  background: #298c29;
   font-family: 'Nunito', 'Poppins', sans-serif;
   font-smooth: always;
   -webkit-font-smoothing: antialiased;
@@ -40,9 +41,9 @@ html, body {
   --navclhover: black;
   --canvasBT : #292929;
   --contentBD : #616161;
-  --bodyBG : radial-gradient(circle at top right ,#064406,#035b03);
+  --bodyBG : radial-gradient(circle at top right ,#03af03,#035b03);
   --green-light: #0add0a;
-  --hearderColor: black;
+  --hearderColor: #25e00b;
   --contentColor: white; 
   --contentBG: black;
   --canvasColor:gray;
@@ -50,11 +51,21 @@ html, body {
 
 .headers{
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-items: flex-start;
+  align-items: center;
+  gap: 20px;
   color: var(--hearderColor);
   width: 100%;
-  height: 10em;
+  height: 9em;
+  border-radius: 10px;
+}
+.head-1,.head-2{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
 }
 
 .headers .head-logo{
@@ -92,7 +103,7 @@ html, body {
   width: auto;
   height: 10px;
   padding: 20px 5px;
-  background: #069d06;
+  background: #138d13;
   justify-content: center;
   align-items: center;
   border-radius: 7px;
@@ -105,11 +116,8 @@ html, body {
 }
 
 .user-name{
-  position: absolute;
-  top: 4em;
-  left: 5px;
-  width: auto;
-  background-color: green;
+  width: 100%;
+  background-color: #076d07;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -129,9 +137,6 @@ html, body {
 }
 
 .att-review{
-  position: absolute;
-  top: 3.8em;
-  right: 0px;
   background-color: transparent;
   margin: 4px;
   display: flex;
@@ -406,4 +411,3 @@ html, body {
   align-items: center;
   box-shadow: 0 0 20px rgba(0,200,0,0.4);
   }
-
