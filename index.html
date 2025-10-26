@@ -326,7 +326,7 @@
     // Auto-login if already in IndexedDB
     function autoLoginIfStored() {
       const local = DB.getItem('currentUser') ;
-      const localResult = local ? JSON.parse(local) : {};
+      let localResult = local ? JSON.parse(local) : null;
       console.log(localResult);
       const request = indexedDB.open('AdexUsers',2);
       request.onupgradeneeded = (e)=>{
