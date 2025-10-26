@@ -239,15 +239,9 @@ signUpButton.addEventListener('submit', async (e) => {
   //const passwordInput = Password.value.trim();
 
   // Basic empty field check
-  if (!name || !regNm || !department || !levelInput) {
+  if (!name || !regNm || !department) {
     return statusDisplay(false, "All fields are required.");
   }
-
-  if (!checkLevel(levelInput)) {
-    return statusDisplay(false, 'Level value is not valid');
-  }
-
-
   
   const result = await getCurrentUser();
   const email = result.email.toLowerCase();
