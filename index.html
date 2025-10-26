@@ -286,8 +286,7 @@
       const ref = doc(db,'EmailIndex',email);
       try{
         const snapshot = await getDoc(ref);
-        const found = snapshot.find(doc => doc.data().email === email);
-        if (found) return { exists: true, data: found.data() };
+        if (snapshot) return { exists: true, data: snapshot.data() };
         return { exists: false };
       }catch (err) {
         console.error('Error checking user:', err.message);
