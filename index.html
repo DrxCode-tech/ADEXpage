@@ -211,7 +211,7 @@
   </script>
   <script type="module">
     import { auth, db } from './firebaseConfig.js';
-    import { getDocs, collection } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+    import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
     import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
     const DB = window.localStorage;
     function deleteData(dbName){
@@ -283,20 +283,16 @@
 
     async function checkUserEmailPresent(user) {
       const email = user.email.toLowerCase();
-      const levels = ['100', '200', '300', '400', '500'];
-
-      for (const level of levels) {
-        const ref = collection(db,'EmailIndex',level,email);
-        try {
-          const snapshot = await getDocs(ref);
-          const found = snapshot.docs.find(doc => doc.data().email === email);
-          if (found) return { exists: true, data: found.data() };
-        } catch (err) {
-          console.error('Error checking user:', err.message);
-          alert(err.message);
-        }
+      const ref = doc(db,'EmailIndex',email);
+      try{
+        const snapshot = await getDoc(ref);
+        const found = snapshot.find(doc => doc.data().email === email);
+        if (found) return { exists: true, data: found.data() };
+        return { exists: false };
+      }catch (err) {
+        console.error('Error checking user:', err.message);
+        alert(err.message);
       }
-      return { exists: false };
     }
 
     createBut.addEventListener('click', async () => {
@@ -327,57 +323,6 @@
       }
     });
     
-    function addUserToIndexedDB() {
-      const request = indexedDB.open('AdexUsers', 2); // 👈 bump version to force upgrade
-
-      request.onupgradeneeded = function (event) {
-        const db = event.target.result;
-
-        if (!db.objectStoreNames.contains('users')) {
-          db.createObjectStore('users'); // 👈 create object store here
-          console.log('Object store "users" created');
-        }
-      };
-
-      request.onsuccess = function (event) {
-        const db = event.target.result;
-
-        const transaction = db.transaction('users', 'readwrite');
-        const store = transaction.objectStore('users');
-        const obj = {
-          name : 'Danni',
-          regNm : '24',
-          dept:'Computer Engineer',
-          stdObj:{
-            lock:2,
-          }
-        };
-        store.put(obj,'currentUser') ;
-        DB.setItem('currentUser',JSON.stringify(obj));
-        console.log('local created successfully');
-    /*const rep = store.get('currentUser');
-    rep.onsuccess = ()=>{
-      console.log(rep.result);
-    }
-    rep.onerror = ()=>{
-      console.log(rep.error);
-    }*/
-    
-        transaction.oncomplete = () => {
-          db.close();
-          console.log("User added successfully.");
-        };
-
-        transaction.onerror = () => {
-          console.error("Error adding user:", transaction.error);
-        };
-      };
-
-      request.onerror = function () {
-        console.error("Error opening database:", request.error);
-      };
-    }
-    
     // Auto-login if already in IndexedDB
     function autoLoginIfStored() {
       const local = DB.getItem('currentUser') ;
@@ -402,20 +347,20 @@
           if (getUser.result) {
             showSpinner(`${getUser.result.name || 'User'} logging in...`);
             console.log(getUser.result);
-            setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 5000);
             
           }
           else if(localResult){
             showSpinner(`${localResult.name || 'User'} logging in...`);
             console.log(localResult);
-            setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 5000);
           }
           db.close();
         };
         getUser.onerror = (e)=>{
           if(localResult){
             showSpinner(`${localResult.name || 'User'} logging in...`);
-            setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 5000);
             console.log('error occur in indexedDB...fetch data from local');
           }else{
             console.log('error occur in indexedDB');
@@ -427,7 +372,7 @@
       request.onerror = (e)=>{
         if(localResult){
           showSpinner(`${localResult.name || 'User'} logging in...`);
-          setTimeout(() => window.location.href = 'V3ADEX.html', 10000);
+          setTimeout(() => window.location.href = 'V3ADEX.html', 5000);
           console.log('onupgradeneeded error occur ..but fetched successfully from localStorage');
           return;
         }
@@ -439,3 +384,4 @@
   </script>
 </body>
 </html>
+

@@ -64,8 +64,8 @@ function displayDeptfromReg(reg){
 async function findUserInFirestore(regNm) {
   const reg = regNm.replace(/\//g,'-');
   const dept = displayDeptfromReg(regNm);
-  const year = regNm.split('/')[0];
-  const docm = doc(db,'UNIUYO',year,dept,reg);
+  const level = regNm.split('/')[0];
+  const docm = doc(db,'UNIUYO',level,dept,reg);
   try{
     const user = await getDoc(docm);
     if(user.exists()){

@@ -11,17 +11,17 @@ import {
   setDoc,
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js";
 
+
+const DB = window.localStorage;
 // Initialization of inputs
 const signUpButton = document.getElementById('signupForm');
 const Name = document.getElementById('name');
 const RegNM = document.getElementById('regNumber');
 const Department = document.getElementById('department');
-const Level = document.getElementById('level');
+//const Level = document.getElementById('level');
 let Email ;
 
 
@@ -44,12 +44,14 @@ function statusDisplay(state, txt) {
 
 // Store user data under key "currentUser"
 function storeUser(user) {
-  const request = indexedDB.open("adexUsers", 1);
+  DB.setItem('currentUser',JSON.stringify(user));
+  const request = indexedDB.open("AdexUsers",2);
 
   request.onupgradeneeded = function(event) {
     const db = event.target.result;
     if (!db.objectStoreNames.contains("users")) {
       db.createObjectStore("users");
+      console.log('onupgradeneeded successful');
     }
   };
 
@@ -61,7 +63,7 @@ function storeUser(user) {
     store.put(user, "currentUser");
 
     tx.oncomplete = function () {
-      console.log("User stored successfully.");
+      console.log("User stored successfully to IndexedDB and localStorage.");
       db.close();
     };
 
@@ -105,13 +107,14 @@ function escapeRegExp(string) {
 }
 
 // Check level validity
-function checkLevel(value) {
+/*function checkLevel(value) {
   const validValues = ['100', '200', '300', '400', '500'];
   return validValues.includes(value);
-}
+}*/
 
 // Checking if user exists on DB
-async function checkUser(level, email, dept, regNm) {
+async function checkUser(email, dept, regNm) {
+  const level = regNm.split('/')[0];
   const reg = regNm.replace(/\//g, '-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
   try {
@@ -123,7 +126,8 @@ async function checkUser(level, email, dept, regNm) {
   }
 }
 
-async function verifyAndOpen(email, regNm, level, dept) {
+async function verifyAndOpen(email, regNm, dept) {
+  const level = regNm.split('/')[0];
   const reg = regNm.replace(/\//g, '-');
   const docm = doc(db, 'UNIUYO', level, dept, reg);
 
@@ -135,10 +139,13 @@ async function verifyAndOpen(email, regNm, level, dept) {
         const newUser = {
           uid: userDt.uid,
           name: userDt.name,
+          level:userDt.level,
           regNm: userDt.regNm,
+          regNumber:userDt.regNumber,
           email: userDt.email,
           dept: userDt.dept,
           date: userDt.date,
+          stdObj:userDt.stdObj,
         };
         storeUser(newUser);
         spinner.style.display = 'none';
@@ -160,12 +167,15 @@ async function verifyAndOpen(email, regNm, level, dept) {
 
 
 // Sign up new user and store in Firebase & IndexedDB
-async function createUserAcct(user,name,regNm,email,dept,level){
+async function createUserAcct(user,name,regNm,email,dept){
+  const level = regNm.split('/')[0];
+  const regNumber = regNm.split('/').pop();
   const newUser = {
     uid: user.uid,
     name,
     level,
     regNm,
+    regNumber,
     email,
     dept,
     date: new Date().toISOString(),
@@ -178,7 +188,7 @@ async function createUserAcct(user,name,regNm,email,dept,level){
   const reg = regNm.replace(/\//g,'-');
   try{
     const docm = doc(db,'UNIUYO',level,dept,reg);
-    const emailDocm = doc(db,'EmailIndex',level,email,reg);
+    const emailDocm = doc(db,'EmailIndex',email);
     await setDoc(docm, newUser);
     await setDoc(emailDocm,newUser);
 
@@ -204,9 +214,9 @@ function getCurrentUser(){
   })
 }
 
-async function signUpUser(newUser,fullName,email,level, dept, regNm) {
+async function signUpUser(newUser,fullName,email, dept, regNm) {
   try {
-    await createUserAcct(newUser, fullName, regNm,email, dept, level);
+    await createUserAcct(newUser, fullName, regNm,email, dept);
     spinner.style.display = 'none';
   } catch (error) {
     spinner.style.display = 'none';
@@ -225,7 +235,7 @@ signUpButton.addEventListener('submit', async (e) => {
   const regNm = standardizeRegNumber(RegNM.value.trim()).toUpperCase();
   const department = Department.value.trim();
   //const email = Email.value.trim();
-  const levelInput = Level.value.trim();
+  //const levelInput = Level.value.trim();
   //const passwordInput = Password.value.trim();
 
   // Basic empty field check
@@ -238,20 +248,19 @@ signUpButton.addEventListener('submit', async (e) => {
   }
 
 
-  spinner.style.display = 'block';
+  
   const result = await getCurrentUser();
   const email = result.email.toLowerCase();
   // Check if user already exists
-  const userPresence = await checkUser(levelInput,email ,department,regNm);
+  const userPresence = await checkUser(email ,department,regNm);
   if (userPresence) {
-    await verifyAndOpen(email,regNm, levelInput, department);
+    await verifyAndOpen(email,regNm, department);
     return;
   }
-
+  spinner.style.display = 'block';
   try{
-    await signUpUser(result,name, email, levelInput, department, regNm);
-     }catch(err){
+    await signUpUser(result,name, email, department, regNm);
+  }catch(err){
     statusDisplay(false, `${err}`);
   }
-  
 })
