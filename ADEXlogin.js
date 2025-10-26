@@ -80,6 +80,7 @@ async function findUserInFirestore(regNm) {
 function clearUserData() {
   DB.removeItem('att-his');
   DB.removeItem('att-his-state');
+  DB.removeItem('currentUser');
   let request = indexedDB.deleteDatabase('AdexUsers');
   request.onblock = ()=>{
     console.log('failed to delete ...pls make sure to close all tabs concerning ADEX before proceeding ')
