@@ -895,10 +895,10 @@ markBt.addEventListener('click',async (e)=>{
   const level = stdUser.level;
   const name = (Name.textContent.trim() !== 'USER NAME')? Name.textContent.trim() : false;
   const regNm =  (RegNM.textContent.trim() !== 'USER_REG NUMBER') ? RegNM.textContent.trim() : false;
-  //const department = (Department.textContent.trim() !== 'Department') ? Department.textContent.trim() : false;
+  const department = (Department.textContent.trim() !== 'Department') ? Department.textContent.trim() : false;
   let cours = (currentCourseDisplay.textContent.trim() !== 'No class') ? currentCourseDisplay.textContent.trim() : false;
   
-  if(!name || !regNm || !cours || !level) return alert('All ADEX field must be filled!');
+  if(!name || !regNm || !cours || !department || !level) return alert('All ADEX field must be filled!');
 
   const course = cours.replace(/\s+/g, '').toUpperCase();
   
