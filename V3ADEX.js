@@ -342,7 +342,7 @@ function changeCourse(startHour, endHour, course) {
   } 
 }
 
-// --- Time-based Attendance Activation ---00p1
+
 function checkAttendanceState() {
   const day = new Date().getDay();
   const hour = new Date().getHours();
@@ -350,28 +350,37 @@ function checkAttendanceState() {
 
   switch (day) {
     case 1: // Monday
-      if (hour >= 4 && hour < 10) changeCourse(4, 10, "GST121");
-      else if (hour >= 13 && hour < 14) changeCourse(13, 14, "GET121");
-      else if (hour >= 14 && hour < 16) changeCourse(14, 16, "CHM121");
+        if (hour >= 8 && hour < 10) changeCourse(8, 10, "EEE211");
+pp      else if (hour >= 12 && hour < 2) changeCourse(12, 2, "CEE211");
       break;
     case 2: // Tuesday
-      if (hour >= 8 && hour < 10) changeCourse(8, 10, "MTH122");
-      else if (hour >= 10 && hour < 12) changeCourse(10, 12, "PHY128");
-      else if (hour >= 13 && hour < 15) changeCourse(13, 15, "GST121");
-      else if (hour >= 15 && hour < 22) changeCourse(15, 22, "LK");
+      if (hour >= 8 && hour < 10) changeCourse(8, 10, "GST211");
+      else if (hour >= 10 && hour < 12) changeCourse(10, 12, "FDE2110");
+      else if (hour >= 12 && hour < 14) changeCours0e(12, 14, "GST215");
+      else if (hour >= 14 && hour < 15) changeCourse(14, 15, "GET213");
+      else if (hour >= 15 && hour < 17) changeCourse(15, 17, "GET212");
       break;
     case 3: // Wednesday
-      if (hour >= 8 && hour < 10) changeCourse(8, 10, "MTH121");
-      else if (hour >= 10 && hour < 12) changeCourse(10, 12, "CPE121");
-      else if (hour >= 15 && hour < 20) changeCourse(15, 20, "PHY121");
+      if (hour >= 8 && hour < 10) changeCourse(8, 10, "ENT211");
+      else if (hour >= 10 && hour < 11) changeCourse(10, 11, "GET213");
+      else if (hour >= 13 && hour < 14) changeCourse(13, 14, "ENT211");
+      else if (hour >= 14 && hour < 16) changeCourse(14, 16, "CEE211");
+      else if (hour >= 16 && hour < 17) changeCourse(16, 17, "GET215");
       break;
     case 4: // Thursday
-      if (hour >= 8 && hour < 10) changeCourse(8, 10, "CHM123");
+      if (hour >= 9 && hour < 11) changeCourse(9, 11, "CHE212");
+      else if (hour >= 12 && hour < 14) changeCourse(12, 14, "GET214");
+      else if (hour >= 14 && hour < 16) changeCourse(14, 16, "GET211");
+      else if (hour >= 16 && hour < 17) changeCourse(16, 17, "PEE211");
+      break;
     case 6: // Friday
-      if (hour >= 8 && hour < 10) changeCourse(8, 10, "PHY122");
-      else if (hour >= 10 && hour < 14) changeCourse(
-        10, 14, "CPE121");
-      else if (hour >= 13 && hour < 20) changeCourse(13, 20, "TPP");
+      if (hour >= 8 && hour < 9) changeCourse(8, 9, "GET214");
+      else if (hour >= 9 && hour < 10) changeCourse(
+        9, 10, "GET212");
+      else if (hour >= 10 && hour < 11) changeCourse(10, 11, "GET211")
+      else if (hour >= 11 && hour < 13) changeCourse(11, 13, "PEE211");
+      else if (hour >= 14 && hour < 15) changeCourse(14, 15, "CHE211");
+      else if (hour >= 15 && hour < 17) changeCourse(15, 17, "ENT211");
       break;
     default :
       alert('No classes today')
