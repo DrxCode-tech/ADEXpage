@@ -43,7 +43,7 @@ html, body {
   --contentBD : #616161;
   --bodyBG : radial-gradient(circle at top right ,#03af03,#035b03);
   --green-light: #0add0a;
-  --hearderColor: #25e00b;
+  --hearderColor: white;
   --contentColor: white; 
   --contentBG: black;
   --canvasColor:gray;
@@ -59,6 +59,10 @@ html, body {
   width: 100%;
   height: 9em;
   border-radius: 10px;
+  border:1px solid #2af02a;
+  padding: 10px 5px;
+  background-image: radial-gradient(circle at top right,#03bf03,#024a02);
+  margin-bottom: 10px;
 }
 .head-1,.head-2{
   display: flex;
@@ -153,8 +157,7 @@ html, body {
 .content{
   width: 100%;
   height: 40em;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  border-radius: 20px;
   background: var(--contentBG);
   display: flex;
   flex-direction: column;
@@ -274,6 +277,7 @@ html, body {
   border-bottom-left-radius: 10px;
   box-shadow: 0 0 8px rgba(200,200,200,0.3);
   z-index: 4;
+  border: 1px solid #ffffff62;
 }
 .nav-bar .f-nav .cancel{
   color: var(--navcl);
