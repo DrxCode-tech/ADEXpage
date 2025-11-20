@@ -406,7 +406,7 @@ async function loadAttendance() {
     return;
   }
   const dept = Department.textContent.trim();
-  const course = currentCourseDisplay.textContent.trim().toLowerCase();
+  const course = currentCourseDisplay.textContent.trim().toUpperCase();
   if (course === 'no class') {
     attView.innerHTML = '<h3>No class yet!</h3>';
     return;
