@@ -32,6 +32,10 @@ const attReview = document.querySelector('.att-review');
 const reviewBut = document.querySelector('.reviewBut');
 const reviewLog = document.querySelector('.b-review');
 const attHpage = document.querySelector('.attdhis-view');
+const bodyVerify = document.querySelector('.body-verify');
+const cancelVerify = document.querySelector('.cancel-verify');
+const proceedVerify = document.querySelector('.proceed-verify');
+
 if(!JSON.parse(dtb.getItem('att-his-state')) || JSON.parse(dtb.getItem('att-his-state')) !== 1){
   dtb.setItem('att-his-state',JSON.stringify(0));
 }
@@ -49,6 +53,14 @@ modeToggle.addEventListener("click", () => {
     localStorage.setItem("theme", "light");
   }
 });
+
+cancelVerify.addEventListener("click",()=>{
+  bodyVerify.style.display = "none";
+})
+proceedVerify.addEventListener("click",()=>{
+  bodyVerify.style.display = "none";
+  window.location.href = "https://face-verify-lemon.vercel.app/upload.html";
+})
 
 // Load saved theme
 if (localStorage.getItem("theme") === "dark") {
@@ -303,6 +315,14 @@ async function trackPageView() {
   }
 }
 
+function checkingForReferencePic(user){
+  if(!user.referencePic){
+    bodyVerify.style.display = "flex";
+    return;
+  }
+  localStorage.setItem("urrl",user.referencePic);
+}
+
 async function displayUserDetails(user){
   document.getElementById('userName').textContent = user.name;
   document.getElementById('regNumber').textContent = user.regNm;
@@ -312,6 +332,7 @@ async function displayUserDetails(user){
   const isOffline = await isReallyOnline();
   // Call this on page load
   await trackPageView();
+  checkingForReferencePic(user);
 }
 
 //log out function
@@ -503,6 +524,7 @@ async function markAttendance(name, regNm, dept, course, date,level) {
     // ensures it creates or updates without overwriting other depts
     spinnerContainer.style.display ='none';
     setTimeout(() => {
+      localStorage.setItem("verifiedAdexid","false");
       statusDisplay(true, 'Attendance submitted successfully! Thank you for using ADEX');
     }, 1000);
   
@@ -897,10 +919,17 @@ async function markPortal(output,name,regNm,department,course,date,student,level
   }
 }
 
+function confirmFaceVerification(){
+  window.location.href = "https://face-verify-lemon.vercel.app/verify.html";
+}
+
 //Marking Attendance logic
 markBt.addEventListener('click',async (e)=>{
   e.preventDefault();
   
+  checkingForReferencePic(stdUser);
+  const verified = localStorage.getItem("verifiedAdexid");
+  if(verified !== "true") confirmFaceVerification();
   const level = stdUser.level;
   const name = (Name.textContent.trim() !== 'USER NAME')? Name.textContent.trim() : false;
   const regNm =  (RegNM.textContent.trim() !== 'USER_REG NUMBER') ? RegNM.textContent.trim() : false;
@@ -937,11 +966,13 @@ markBt.addEventListener('click',async (e)=>{
       const output = await verifyStudentsPortal(student,course,dateSlash);
       console.log('output.state: ',output.state);
       await markPortal(output,name,regNm,department,course,date,student,level);
+      localStorage.setItem("verifiedAdexid","false");
       spinnerContainer.style.display = 'none';
       return;
     } 
     
     spinnerContainer.style.display = 'none';
+    localStorage.setItem("verifiedAdexid","false");
     syncAttendanceData(name,regNm,department,course,date,dateSlash,student,level);
   }catch(err){
     spinnerContainer.style.display = 'none';
@@ -1102,3 +1133,4 @@ function trySyncStoredAttendance(DB, interval) {
     };
   });
 }
+

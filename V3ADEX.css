@@ -415,3 +415,68 @@ html, body {
   align-items: center;
   box-shadow: 0 0 20px rgba(0,200,0,0.4);
   }
+
+.body-verify{
+  backdrop-filter: blur(10px);
+  background: #53535381;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: none;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
+}
+.verify-pop{
+  width: 300px;
+  max-width: 70%;
+  padding: 10px 10px;
+  border-radius: 15px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
+  transform: scale(1.2);
+}
+.text-pop{
+  font-size: 17px;
+  font-weight: bold;
+  padding: 2px;
+  text-align: center;
+}
+.button-space{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.cancel-verify{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #202020;
+  background: #a5a5a5;
+  border-radius: 10px;
+  border: none;
+  padding: 8px 2px;
+  width: 70px;
+}
+.proceed-verify{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  background: green;
+  border-radius: 10px;
+  border: none;
+  padding: 8px 2px;
+  width: 70px;
+}
