@@ -315,7 +315,8 @@ async function trackPageView() {
   }
 }
 
-function checkingForReferencePic(user){
+function checkingForReferencePic(){
+  const user = JSON.parse(dtb.getItem("currentUser"));
   if(!user.referencePic){
     bodyVerify.style.display = "flex";
     return;
@@ -331,7 +332,7 @@ async function displayUserDetails(user){
   const isOffline = await isReallyOnline();
   // Call this on page load
   await trackPageView();
-  checkingForReferencePic(user);
+  checkingForReferencePic();
 }
 
 //log out function
@@ -926,7 +927,7 @@ function confirmFaceVerification(){
 markBt.addEventListener('click',async (e)=>{
   e.preventDefault();
   
-  checkingForReferencePic(stdUser);
+  checkingForReferencePic();
   const verified = localStorage.getItem("verifiedAdexid");
   if(verified !== "true") confirmFaceVerification();
   const level = stdUser.level;
