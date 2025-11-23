@@ -86,7 +86,7 @@
     }
 
     const MODELS_URI = './models';
-    const student = JSON.parse(dtb.getItem('currentUser'));
+    const student = JSON.parse(localStorage.getItem('currentUser'));
     const REFERENCE_IMAGE = student.referencePic;
     const THRESHOLD = 0.45;
     let referenceDescriptor = null;
