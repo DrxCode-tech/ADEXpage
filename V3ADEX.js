@@ -59,7 +59,7 @@ cancelVerify.addEventListener("click",()=>{
 })
 proceedVerify.addEventListener("click",()=>{
   bodyVerify.style.display = "none";
-  window.location.href = "https://face-verify-lemon.vercel.app/upload.html";
+  window.location.href = "upload.html";
 })
 
 // Load saved theme
@@ -320,7 +320,6 @@ function checkingForReferencePic(user){
     bodyVerify.style.display = "flex";
     return;
   }
-  localStorage.setItem("urrl",user.referencePic);
 }
 
 async function displayUserDetails(user){
@@ -920,7 +919,7 @@ async function markPortal(output,name,regNm,department,course,date,student,level
 }
 
 function confirmFaceVerification(){
-  window.location.href = "https://face-verify-lemon.vercel.app/verify.html";
+  window.location.href = "verify.html";
 }
 
 //Marking Attendance logic
@@ -1133,4 +1132,5 @@ function trySyncStoredAttendance(DB, interval) {
     };
   });
 }
+
 
