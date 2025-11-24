@@ -927,9 +927,6 @@ function confirmFaceVerification(){
 markBt.addEventListener('click',async (e)=>{
   e.preventDefault();
   
-  checkingForReferencePic();
-  const verified = localStorage.getItem("verifiedAdexid");
-  if(verified !== "true") confirmFaceVerification();
   const level = stdUser.level;
   const name = (Name.textContent.trim() !== 'USER NAME')? Name.textContent.trim() : false;
   const regNm =  (RegNM.textContent.trim() !== 'USER_REG NUMBER') ? RegNM.textContent.trim() : false;
@@ -939,7 +936,9 @@ markBt.addEventListener('click',async (e)=>{
   if(!name || !regNm || !cours || !department || !level) return alert('All ADEX field must be filled!');
 
   const course = cours.replace(/\s+/g, '').toUpperCase();
-  
+  checkingForReferencePic();
+  const verified = localStorage.getItem("verifiedAdexid");
+  if(verified !== "true") return confirmFaceVerification();
   
   /*if(!navigator.geolocation) return statusDisplay(false,'Geolocation is not supported by your brower!');
   spinnerContainer.style.display = 'block';
