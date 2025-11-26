@@ -1,0 +1,386 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="manifest" href="manifest.json" />
+  <title>Create Account - ADEX</title>
+  <style>
+    * {
+      user-select: none;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top right, black, #172714);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 110px;
+      padding-top: 20px;
+      color: #ffffff;
+    }
+
+    .title {
+      width: 90%;
+      max-width: 400px;
+      padding: 18px;
+      background: black;
+      color: #058d04;
+      font-size: 2.4em;
+      font-weight: 800;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 4px 8px #87fc9d;
+    }
+    .shadow{
+      -webkit-box-reflect: below -15px linear-gradient(transparent, rgba(0, 0, 0, 0.3));
+    }
+
+    .container {
+      width: 90%;
+      max-width: 550px;
+      background: #121212;
+      border-radius: 18px;
+      padding: 30px 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 35px;
+      border: 2px solid gray;
+      box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+    }
+
+    .container h2 {
+      font-size: 2em;
+      font-weight: 700;
+      color: #87fc8a;
+      text-shadow: 0 0 8px #048d0e;
+    }
+
+    .img-div {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    .img-div img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .acct-but {
+      margin-top: 10px;
+      width: 80%;
+      padding: 12px 0;
+      font-size: 1.3em;
+      font-weight: bold;
+      background: linear-gradient(90deg, #048d16, #87fc9f, #048d12);
+      background-size: 300% 100%;
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+      animation: button 4s linear infinite;
+      cursor: pointer;
+    }
+
+    .acct-but:hover {
+      transform: translateY(-4px);
+    }
+
+    @keyframes button {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #spinner {
+      display: none;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      backdrop-filter: blur(10px);
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 20px 10px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      z-index: 100;
+      width: 300px;
+      height: 70px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #87fc8d;
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .navigator {
+      font-size: 1em;
+      font-weight: bold;
+      color: #87fc9a;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .footer a {
+      text-decoration: none;
+      color: #8ffc87;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="title" data-text="ADEX"><p class="shadow">ADEX</p></div>
+  <div class="container">
+    <div class="img-div">
+      <img src="ADEXimge.jpg" alt="ADEX">
+    </div>
+    <h2>Welcome to ADEX</h2>
+    <button class="acct-but">Create Account</button>
+  </div>
+  <div class="footer">
+    Already have an account? <a href="ADEXlogin.html">Log in</a>
+  </div>
+  
+  <div id="spinner">
+    <div class="spinner-container" >
+      <div class="spinner"></div>
+    </div>
+    <p class="navigator">Loading...</p>
+  </div>
+  
+  <!-- Firebase and app logic -->
+    <!-- Install Button -->
+  <button id="installButton" style="display: none; position: fixed; bottom: 20px; right: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    Install ADEX
+  </button>
+  <script>
+    // Handle PWA installation
+    let deferredPrompt;
+    const installButton = document.getElementById('installButton');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installButton.style.display = 'block';
+    });
+
+    installButton.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+          installButton.style.display = 'none';
+        });
+      }
+    });
+
+    // Optionally, hide the install button if the app is already installed
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA was installed');
+      installButton.style.display = 'none';
+    });
+  </script>
+  <script type="module">
+    import { auth, db } from './firebaseConfig.js';
+    import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
+    import { GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-auth.js';
+    const DB = window.localStorage;
+    function deleteData(dbName){
+      let requestDel = indexedDB.deleteDatabase(dbName);
+      requestDel.onsuccess = (e)=>{
+        console.log(`from deleteData fun successfully deleted ${dbName}`)
+      }
+      
+      requestDel.onerror = (err)=>{
+        console.error(`error from deleteData fun trying to delete ${dbName} ${requestDel.error} `)
+      }
+      
+      requestDel.onblocked = ()=>{
+        console.log(`delete from deleteData fun is blocked -maybe ${dbName} is still open in another tab`);
+      }
+    }
+    document.addEventListener('DOMContentLoaded',()=>{
+      console.log('now running ');
+      deleteData('adexUsers');
+      deleteData('adexusers');
+      console.log('finished running');
+    });
+    
+    const spin = document.getElementById('spinner');
+    const navig = document.querySelector('.navigator');
+    const createBut = document.querySelector('.acct-but');
+
+    function showSpinner(message) {
+      navig.textContent = message;
+      spin.style.display = 'flex';
+      createBut.disabled = true;
+    }
+
+    function hideSpinner() {
+      spin.style.display = 'none';
+      createBut.disabled = false;
+    }
+    
+    function storeUser(userObj) {
+      DB.setItem('currentUser',JSON.stringify(Array.from(Object.entries(userObj))));
+      const request = indexedDB.open('AdexUsers',2);
+      request.onupgradeneeded = function (e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('users')) {
+          db.createObjectStore('users');
+        }
+      };
+      request.onsuccess = function (e) {
+        const db = e.target.result;
+        const tx = db.transaction('users', 'readwrite');
+        const store = tx.objectStore('users');
+        const addUser = store.put(userObj, 'currentUser');
+        
+        addUser.onsuccess = () => {
+          console.log('User saved in IndexedDB and localStorage successfully');
+          setTimeout(() => window.location.href = 'V3ADEX.html', 1000);
+        };
+        addUser.onerror = (e)=>{
+          
+          console.log('An error occured trying to add to IndexedDB but data successfully saved to localStorage',e.target.error);
+        }
+        db.close();
+      };
+      request.onerror = (e)=>{
+        
+        console.log('onupgradeneeded error occured but data successfully saved to localStorage',e.target.error);
+      }
+    }
+
+    async function checkUserEmailPresent(user) {
+      const email = user.email.toLowerCase();
+      const ref = doc(db,'EmailIndex',email);
+      try{
+        const snapshot = await getDoc(ref);
+        if (snapshot.exists()) return { exists: true, data: snapshot.data() };
+        return { exists: false };
+      }catch (err) {
+        console.error('Error checking user:', err.message);
+        alert(err.message);
+      }
+    }
+
+    createBut.addEventListener('click', async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        showSpinner('Verifying account...');
+
+        const check = await checkUserEmailPresent(user);
+        hideSpinner();
+
+        if (check.exists) {
+          storeUser(check.data);
+        } else {
+          alert('Sign in successful. Please complete your registration.');
+          window.location.href = 'ADEXsign.html';
+        }
+      } catch (err) {
+        hideSpinner();
+        if (err.code === 'auth/popup-closed-by-user') {
+          alert("You closed the popup. Try again.");
+        } else {
+          console.log('Error from create acct button click :',err.message);
+          alert("Oops your internet connection is bad");
+        }
+      }
+    });
+    
+    // Auto-login if already in IndexedDB
+    function autoLoginIfStored() {
+      const local = DB.getItem('currentUser') ;
+      let localResult = local ? JSON.parse(local) : null;
+      console.log(localResult);
+      const request = indexedDB.open('AdexUsers',2);
+      request.onupgradeneeded = (e)=>{
+        const db = e.target.result;
+        if(!db.objectStoreNames.contains('users')){
+          db.createObjectStore('users');
+          console.log('users created successfully')
+        }
+      }
+      request.onsuccess = function (e) {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('users') && !localResult) return console.log('users not found!');
+        const tx = db.transaction('users', 'readonly');
+        const store = tx.objectStore('users');
+        const getUser = store.get('currentUser');
+
+        getUser.onsuccess = () => {
+          if (getUser.result) {
+            showSpinner(`${getUser.result.name || 'User'} logging in...`);
+            console.log(getUser.result);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 5000);
+            
+          }
+          else if(localResult){
+            showSpinner(`${localResult.name || 'User'} logging in...`);
+            console.log(localResult);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 5000);
+          }
+          db.close();
+        };
+        getUser.onerror = (e)=>{
+          if(localResult){
+            showSpinner(`${localResult.name || 'User'} logging in...`);
+            setTimeout(() => window.location.href = 'V3ADEX.html', 5000);
+            console.log('error occur in indexedDB...fetch data from local');
+          }else{
+            console.log('error occur in indexedDB');
+            return;
+          }
+          db.close();
+        }
+      };
+      request.onerror = (e)=>{
+        if(localResult){
+          showSpinner(`${localResult.name || 'User'} logging in...`);
+          setTimeout(() => window.location.href = 'V3ADEX.html', 5000);
+          console.log('onupgradeneeded error occur ..but fetched successfully from localStorage');
+          return;
+        }
+        console.log('onupgradeneeded error occured');
+      }
+    }
+    
+    autoLoginIfStored();
+  </script>
+</body>
+</html>
+
