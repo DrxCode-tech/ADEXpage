@@ -320,7 +320,7 @@ function checkingForReferencePic(){
   const user = JSON.parse(dtb.getItem("currentUser"));
   if(!user.referencePic){
     bodyVerify.style.display = "flex";
-    textPopup.innerHTML = ` ${user.name} have not uploaded a reference picture. For enhanced security, please upload one by clicking 'Proceed' below.`;
+    textPopup.innerHTML = ` ${user.name}, you have not uploaded a reference picture. For enhanced security, please upload one by clicking 'Proceed' below.`;
     return;
   }
 }
