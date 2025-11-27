@@ -35,6 +35,7 @@ const attHpage = document.querySelector('.attdhis-view');
 const bodyVerify = document.querySelector('.body-verify');
 const cancelVerify = document.querySelector('.cancel-verify');
 const proceedVerify = document.querySelector('.proceed-verify');
+const textPopup = document.querySelector('.text-popup');
 
 if(!JSON.parse(dtb.getItem('att-his-state')) || JSON.parse(dtb.getItem('att-his-state')) !== 1){
   dtb.setItem('att-his-state',JSON.stringify(0));
@@ -319,6 +320,7 @@ function checkingForReferencePic(){
   const user = JSON.parse(dtb.getItem("currentUser"));
   if(!user.referencePic){
     bodyVerify.style.display = "flex";
+    textPopup.innerHTML = "You have not uploaded a reference picture. For enhanced security, please upload one by clicking 'Proceed' below.";
     return;
   }
 }
