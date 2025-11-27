@@ -35,7 +35,7 @@ const attHpage = document.querySelector('.attdhis-view');
 const bodyVerify = document.querySelector('.body-verify');
 const cancelVerify = document.querySelector('.cancel-verify');
 const proceedVerify = document.querySelector('.proceed-verify');
-const textPopup = document.querySelector('.text-popup');
+const textPopup = document.querySelector('.text-pop');
 
 if(!JSON.parse(dtb.getItem('att-his-state')) || JSON.parse(dtb.getItem('att-his-state')) !== 1){
   dtb.setItem('att-his-state',JSON.stringify(0));
