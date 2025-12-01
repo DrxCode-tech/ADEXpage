@@ -11,7 +11,7 @@ html, body {
   width: 100%;
   margin: 0;
   padding: 5px;
-  background: #298c29;
+  background: black;
   font-family: 'Nunito', 'Poppins', sans-serif;
   font-smooth: always;
   -webkit-font-smoothing: antialiased;
@@ -45,7 +45,7 @@ html, body {
   --green-light: #0add0a;
   --hearderColor: white;
   --contentColor: white; 
-  --contentBG: black;
+  --contentBG: rgb(49, 49, 49);
   --canvasColor:gray;
 }
 
@@ -288,7 +288,6 @@ html, body {
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 10px;
   padding: 5px;
   font-weight: bold;
 }
@@ -302,7 +301,7 @@ html, body {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
   color: var(--navcl);
 }
 .nav-bar .f-nav p:hover,.s-nav p:hover{
