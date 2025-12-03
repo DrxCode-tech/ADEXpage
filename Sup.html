@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Geolocation 5-Run Logger + Average</h2>
+
+<button onclick="runGeo()">Start</button>
+
+<pre id="output"></pre>
+
+<script>
+function runGeo() {
+    const out = document.getElementById("output");
+    out.textContent = "Starting...\n";
+
+    let readings = [];
+    let count = 0;
+    let maxRuns = 5;
+
+    function getReading() {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                let lat = pos.coords.latitude;
+                let lon = pos.coords.longitude;
+
+                readings.push({ lat, lon });
+                count++;
+
+                out.textContent += `Run ${count}: Lat = ${lat}, Lon = ${lon}\n`;
+
+                if (count < maxRuns) {
+                    setTimeout(getReading, 1000); // wait 1 second between readings
+                } else {
+                    // compute average
+                    let avgLat = readings.reduce((a, b) => a + b.lat, 0) / readings.length;
+                    let avgLon = readings.reduce((a, b) => a + b.lon, 0) / readings.length;
+
+                    out.textContent += `\n--- AVERAGE ---\nLat: ${avgLat}\nLon: ${avgLon}\n`;
+                }
+            },
+            (err) => {
+                out.textContent += "Error getting location: " + err.message + "\n";
+            }
+        );
+    }
+
+    getReading();
+}
+</script>
+
+</body>
+</html>
