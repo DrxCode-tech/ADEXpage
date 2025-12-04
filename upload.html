@@ -82,7 +82,11 @@ import { db } from './firebaseConfig.js';
 import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js';
 
 const checkingPermission = localStorage.getItem("take_Image");
-if(!checkingPermission) return window.location.href = "V3ADEX.html";
+
+if (!checkingPermission) {
+  window.location.replace("V3ADEX.html");
+}
+
 
 const MODELS = "./models";
 const studObj = JSON.parse(localStorage.getItem('currentUser'));
