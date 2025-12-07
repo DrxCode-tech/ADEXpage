@@ -970,10 +970,13 @@ async function markPortal(output, name, regNm, department, course, date, student
   try {
     switch (output.state) {
       case false:
+        localStorage.setItem("verifiedAdexid", "false");
         return await warning(student);
       case 'Time_past':
+        localStorage.setItem("verifiedAdexid", "false");
         return alert('Portal has already been CLOSED...pls meet with the class Rep or ADEX to show you were present in class!');
       case true:
+        localStorage.setItem("verifiedAdexid", "false");
         return await markAttendance(name, regNm, department, course, date, level);
     }
   } catch (err) {
