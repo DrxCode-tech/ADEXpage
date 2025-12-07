@@ -545,61 +545,75 @@ async function markAttendance(name, regNm, dept, course, date, level) {
 
 //geolocation
 let markGeoState = false;
+let watchId = null;
+
 const coor = [5.03806834, 5.040570, 7.97259694, 7.975693];
-async function runGeo() {
-  const readings = [];
-  const maxRuns = 5;
 
-  // Convert geolocation to a Promise
-  function getPosition() {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject);
-    });
-  }
-
-  // Loop and collect readings
-  for (let i = 0; i < maxRuns; i++) {
-    try {
-      const pos = await getPosition();
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-
-      readings.push({ lat, lon });
-      console.log(`Reading ${i + 1}: Latitude: ${lat}, Longitude: ${lon}`);
-
-    } catch (err) {
-      console.error("Error getting location: " + err.message + "\n");
-      statusDisplay("Error getting location: " + err.message + "\n");
+function runGeoWatch() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject("Geolocation not supported.");
+      return;
     }
 
-    // wait 1 second between readings (except after last)
-    if (i < maxRuns - 1) {
-      await new Promise(res => setTimeout(res, 1000));
-    }
-  }
+    const readings = [];
+    const maxRuns = 5;
 
-  // Compute average
-  const avgLat =
-    readings.reduce((sum, r) => sum + r.lat, 0) / readings.length;
+    const opts = {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 10000
+    };
 
-  const avgLon =
-    readings.reduce((sum, r) => sum + r.lon, 0) / readings.length;
+    watchId = navigator.geolocation.watchPosition(
+      pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
 
-  console.log(`Average Latitude: ${avgLat}, Average Longitude: ${avgLon}`);
-  alert(`Average Latitude: ${avgLat}, Average Longitude: ${avgLon}`);
+        readings.push({ lat, lon });
+        console.log(`Reading ${readings.length}:`, lat, lon);
 
-  // Zone check
-  if (
-    avgLat >= coor[0] &&
-    avgLat <= coor[1] &&
-    avgLon >= coor[2] &&
-    avgLon <= coor[3]
-  ) {
-    markGeoState = true;
-  } else {
-    markGeoState = false;
-  }
+        // Once we have 5 readings → stop + resolve
+        if (readings.length >= maxRuns) {
+          navigator.geolocation.clearWatch(watchId);
+          watchId = null;
+
+          const avgLat =
+            readings.reduce((s, r) => s + r.lat, 0) / readings.length;
+
+          const avgLon =
+            readings.reduce((s, r) => s + r.lon, 0) / readings.length;
+
+          console.log("Average Latitude:", avgLat);
+          console.log("Average Longitude:", avgLon);
+
+          // Zone check
+          markGeoState =
+            avgLat >= coor[0] &&
+            avgLat <= coor[1] &&
+            avgLon >= coor[2] &&
+            avgLon <= coor[3];
+
+          console.log("markGeoState =", markGeoState);
+
+          // Resolve the final result to the caller
+          resolve({
+            avgLat,
+            avgLon,
+            markGeoState
+          });
+        }
+      },
+      err => {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        reject(err); // reject the promise on error
+      },
+      opts
+    );
+  });
 }
+
 
 /*
 async function getGeoLocsUI() {
@@ -1032,7 +1046,7 @@ markBt.addEventListener('click', async (e) => {
   */
   spinnerContainer.style.display = 'flex';
   logs.textContent = 'Verifying your location, please wait...';
-  await runGeo();
+  await runGeoWatch();
   if (!markGeoState) {
     statusDisplay(false, 'You are not in the class location, please move to the class location to mark attendance.');
     localStorage.setItem("verifiedAdexid", "false");
