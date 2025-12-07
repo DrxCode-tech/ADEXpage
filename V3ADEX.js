@@ -967,15 +967,14 @@ async function verifyStudentsPortal(student, course, date) {
 async function markPortal(output, name, regNm, department, course, date, student, level) {
 
   try {
+    localStorage.setItem("verifiedAdexid", "false");
     switch (output.state) {
       case false:
-        localStorage.setItem("verifiedAdexid", "false");
         return await warning(student);
       case 'Time_past':
-        localStorage.setItem("verifiedAdexid", "false");
         return alert('Portal has already been CLOSED...pls meet with the class Rep or ADEX to show you were present in class!');
       case true:
-        localStorage.setItem("verifiedAdexid", "false");
+        logs.textContent = 'Checking portal...';
         return await markAttendance(name, regNm, department, course, date, level);
     }
   } catch (err) {
@@ -998,6 +997,7 @@ if(localStorage.getItem("verifiedAdexid") !== "true"){
 markBt.addEventListener('click', async (e) => {
   e.preventDefault();
 
+  const logs = document.querySelector('.logs');
   const level = stdUser.level;
   const name = (Name.textContent.trim() !== 'USER NAME') ? Name.textContent.trim() : false;
   const regNm = (RegNM.textContent.trim() !== 'USER_REG NUMBER') ? RegNM.textContent.trim() : false;
@@ -1031,6 +1031,7 @@ markBt.addEventListener('click', async (e) => {
   }
   */
   spinnerContainer.style.display = 'block';
+  logs.textContent = 'Verifying your location, please wait...';
   await runGeo();
   if (!markGeoState) {
     statusDisplay(false, 'You are not in the class location, please move to the class location to mark attendance.');
