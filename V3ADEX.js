@@ -400,7 +400,7 @@ function checkAttendanceState() {
       else if (hour >= 16 && hour < 17) changeCourse(16, 17, "PEE211");
       break;
     case 0: // Friday
-      if (hour >= 2 && hour < 9) changeCourse(2, 9, "GET214");
+      if (hour >= 2 && hour < 18) changeCourse(2, 18, "GET214");
       else if (hour >= 9 && hour < 10) changeCourse(
         9, 10, "GET212");
       else if (hour >= 10 && hour < 11) changeCourse(10, 11, "GET211")
@@ -1212,5 +1212,6 @@ function trySyncStoredAttendance(DB, interval) {
     };
   });
 }
+
 
 
