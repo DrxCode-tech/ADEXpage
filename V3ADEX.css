@@ -397,7 +397,6 @@ html, body {
   animation: spin 1s linear infinite;
 
   box-sizing: border-box;      /* keeps it a true circle */
-  transform: none !important;  /* prevents oval distortion */
   flex-shrink: 0;              /* prevent stretching */
 }
 
