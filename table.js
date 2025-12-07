@@ -45,8 +45,8 @@ function checkAttendanceState() {
             else if (hour >= 16 && hour < 17) highlightCell("Thu", 16);
             break;
 
-        case 5:
-            if (hour >= 8 && hour < 9) highlightCell("Fri", 8);
+        case 7:
+            if (hour >= 2 && hour < 9) highlightCell("Fri", 2);
             else if (hour >= 9 && hour < 10) highlightCell("Fri", 9);
             else if (hour >= 10 && hour < 11) highlightCell("Fri", 10);
             else if (hour >= 11 && hour < 13) highlightCell("Fri", 12);

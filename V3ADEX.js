@@ -321,7 +321,7 @@ function checkingForReferencePic() {
   const user = JSON.parse(dtb.getItem("currentUser"));
   if (!user.referencePic) {
     bodyVerify.style.display = "flex";
-    localStorage.setItem("take_Image",true);
+    localStorage.setItem("take_Image", true);
     textPopup.innerHTML = ` ${user.name}, you have not uploaded a reference picture. For enhanced security, please upload one by clicking 'Proceed' below.`;
     return;
   }
@@ -398,8 +398,8 @@ function checkAttendanceState() {
       else if (hour >= 14 && hour < 16) changeCourse(14, 16, "GET211");
       else if (hour >= 16 && hour < 17) changeCourse(16, 17, "PEE211");
       break;
-    case 6: // Friday
-      if (hour >= 8 && hour < 9) changeCourse(8, 9, "GET214");
+    case 7: // Friday
+      if (hour >= 2 && hour < 9) changeCourse(2, 9, "GET214");
       else if (hour >= 9 && hour < 10) changeCourse(
         9, 10, "GET212");
       else if (hour >= 10 && hour < 11) changeCourse(10, 11, "GET211")
@@ -544,43 +544,60 @@ async function markAttendance(name, regNm, dept, course, date, level) {
 
 //geolocation
 let markGeoState = false;
-const coor = [5.039823,5.040570,7.974908,7.975693];
-function runGeo() {
+const coor = [5.039823, 5.040570, 7.974908, 7.975693];
+async function runGeo() {
+  const readings = [];
+  const maxRuns = 5;
 
-  let readings = [];
-  let count = 0;
-  let maxRuns = 5;
-
-  function getReading() {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        let lat = pos.coords.latitude;
-        let lon = pos.coords.longitude;
-
-        readings.push({ lat, lon });
-        count++;
-
-        if (count < maxRuns) {
-          setTimeout(getReading, 1000); // wait 1 second between readings
-        } else {
-          // compute average
-          let avgLat = readings.reduce((a, b) => a + b.lat, 0) / readings.length;
-          let avgLon = readings.reduce((a, b) => a + b.lon, 0) / readings.length;
-          if(avgLat >= coor[0] && avgLat <= coor[1] && avgLon >= coor[2] && avgLon <= coor[3]){
-            markGeoState = true;
-          } else {
-            markGeoState = false;
-          }
-        }
-      },
-      (err) => {
-        out.textContent += "Error getting location: " + err.message + "\n";
-      }
-    );
+  // Convert geolocation to a Promise
+  function getPosition() {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
   }
-  
-  getReading();
+
+  // Loop and collect readings
+  for (let i = 0; i < maxRuns; i++) {
+    try {
+      const pos = await getPosition();
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      readings.push({ lat, lon });
+      console.log(`Reading ${i + 1}: Latitude: ${lat}, Longitude: ${lon}`);
+
+    } catch (err) {
+      console.error("Error getting location: " + err.message + "\n");
+    }
+
+    // wait 1 second between readings (except after last)
+    if (i < maxRuns - 1) {
+      await new Promise(res => setTimeout(res, 1000));
+    }
+  }
+
+  // Compute average
+  const avgLat =
+    readings.reduce((sum, r) => sum + r.lat, 0) / readings.length;
+
+  const avgLon =
+    readings.reduce((sum, r) => sum + r.lon, 0) / readings.length;
+
+  console.log(`Average Latitude: ${avgLat}, Average Longitude: ${avgLon}`);
+
+  // Zone check
+  if (
+    avgLat >= coor[0] &&
+    avgLat <= coor[1] &&
+    avgLon >= coor[2] &&
+    avgLon <= coor[3]
+  ) {
+    markGeoState = true;
+  } else {
+    markGeoState = false;
+  }
 }
+
 /*
 async function getGeoLocsUI() {
   const userLocs = [];
@@ -981,7 +998,7 @@ markBt.addEventListener('click', async (e) => {
   checkingForReferencePic();
   const verified = localStorage.getItem("verifiedAdexid");
   if (verified !== "true") return confirmFaceVerification();
-  
+
   /*if(!navigator.geolocation) return statusDisplay(false,'Geolocation is not supported by your brower!');
   spinnerContainer.style.display = 'block';
   try{
@@ -997,9 +1014,9 @@ markBt.addEventListener('click', async (e) => {
   }
   */
   spinnerContainer.style.display = 'block';
-  runGeo();
+  await runGeo();
   if (!markGeoState) {
-    alert('You are not in the class location, please move to the class location to mark attendance.');
+    statusDisplay(false, 'You are not in the class location, please move to the class location to mark attendance.');
     return;
   }
   const dateSlash = getFormattedDate();
