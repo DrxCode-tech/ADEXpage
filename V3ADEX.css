@@ -374,7 +374,7 @@ html, body {
 }
 
 .spinner-container{
-  display: flex; /* Hidden by default, show when needed */
+  display: none; /* Hidden by default, show when needed */
   position: absolute;
   top: 50%;
   left: 50%;
