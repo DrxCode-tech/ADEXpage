@@ -40,3 +40,15 @@ body {
     border-color: #00f2ff;
     font-weight: bold;
 }
+
+.qoute {
+    margin-top: 30px;
+    font-size: 1.2rem;
+    color: #00eaff;
+    text-shadow: 0 0 8px #00eaff;
+}
+.qoute span {
+    font-weight: bold;
+    text-decoration: underline;
+    color: green;
+}
