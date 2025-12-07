@@ -388,16 +388,19 @@ html, body {
   align-items: center;
   gap: 10px;
 }
-.spinner{
-  display: block;
+.spinner {
   width: 38px;
   height: 38px;
-  border: 6px solid #15e315; /* light green */
-  border-top-color: white; /* yellow */
+  border: 6px solid #15e315;
+  border-top-color: white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto;
+
+  box-sizing: border-box;      /* keeps it a true circle */
+  transform: none !important;  /* prevents oval distortion */
+  flex-shrink: 0;              /* prevent stretching */
 }
+
 .logs{
   color: rgb(4, 240, 110);
   font-size: 17px;
