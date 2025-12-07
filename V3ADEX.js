@@ -800,6 +800,7 @@ async function warn(student) {
 
     if (!stdDoc.exists()) {
       console.log('❌ Student not found in collection.');
+      alert('Student not found in collection,pls check INTERNET connection and reload app.If error presist then your account is not found on our database an this may result to issues...pls resolve to contact ADEX')
       return;
     }
 
