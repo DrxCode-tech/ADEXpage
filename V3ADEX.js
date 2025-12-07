@@ -566,9 +566,11 @@ async function runGeo() {
 
       readings.push({ lat, lon });
       console.log(`Reading ${i + 1}: Latitude: ${lat}, Longitude: ${lon}`);
+      alert(`Reading ${i + 1}: Latitude: ${lat}, Longitude: ${lon}`);
 
     } catch (err) {
       console.error("Error getting location: " + err.message + "\n");
+      alert("Error getting location: " + err.message + "\n");
     }
 
     // wait 1 second between readings (except after last)
@@ -585,6 +587,7 @@ async function runGeo() {
     readings.reduce((sum, r) => sum + r.lon, 0) / readings.length;
 
   console.log(`Average Latitude: ${avgLat}, Average Longitude: ${avgLon}`);
+  alert(`Average Latitude: ${avgLat}, Average Longitude: ${avgLon}`);
 
   // Zone check
   if (
