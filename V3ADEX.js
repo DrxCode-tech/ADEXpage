@@ -982,6 +982,12 @@ function confirmFaceVerification() {
   window.location.href = "verify.html";
 }
 
+if(localStorage.getItem("verifiedAdexid") !== "true"){
+  markBt.textContent = "Verify Face_ID";
+}else{
+  markBt.textContent = "Mark Attendance";
+}
+
 //Marking Attendance logic
 markBt.addEventListener('click', async (e) => {
   e.preventDefault();
