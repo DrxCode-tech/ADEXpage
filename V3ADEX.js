@@ -547,7 +547,7 @@ async function markAttendance(name, regNm, dept, course, date, level) {
 let markGeoState = false;
 let watchId = null;
 
-const coor = [5.03806834, 5.040570, 7.97259694, 7.975693];
+const coor = [5.039920, 5.040392, 7.974900, 7.975612];
 
 function runGeoWatch() {
   return new Promise((resolve, reject) => {
