@@ -545,7 +545,7 @@ async function markAttendance(name, regNm, dept, course, date, level) {
 
 //geolocation
 let markGeoState = false;
-const coor = [5.039823, 5.040570, 7.974908, 7.975693];
+const coor = [5.03806834, 5.040570, 7.97259694, 7.975693];
 async function runGeo() {
   const readings = [];
   const maxRuns = 5;
