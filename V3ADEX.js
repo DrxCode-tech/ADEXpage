@@ -566,11 +566,10 @@ async function runGeo() {
 
       readings.push({ lat, lon });
       console.log(`Reading ${i + 1}: Latitude: ${lat}, Longitude: ${lon}`);
-      alert(`Reading ${i + 1}: Latitude: ${lat}, Longitude: ${lon}`);
 
     } catch (err) {
       console.error("Error getting location: " + err.message + "\n");
-      alert("Error getting location: " + err.message + "\n");
+      statusDisplay("Error getting location: " + err.message + "\n");
     }
 
     // wait 1 second between readings (except after last)
