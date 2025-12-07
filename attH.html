@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="adex-img.jpg" type="image/jpg" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>Attendance History</title>
   </head>
@@ -339,7 +340,7 @@
           }else{
             spinnerContainer.style.display = 'block';
             disArrHis = await displayHis(arr);
-            if(disArrHis === []){
+            if(disArrHis === null || disArrHis === undefined){
               spinnerContainer.style.display = 'none';
               return alert('no data');
             }
@@ -356,7 +357,7 @@
           spinnerContainer.style.display = 'block';
           disArrHis = await displayHis(arr);
           spinnerContainer.style.display = 'none';
-          if(disArrHis === []){
+          if(disArrHis === null || disArrHis === undefined){
             return alert('no data');
           }
           if(!disArrHis) return;
