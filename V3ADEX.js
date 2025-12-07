@@ -1030,7 +1030,7 @@ markBt.addEventListener('click', async (e) => {
     return;
   }
   */
-  spinnerContainer.style.display = 'block';
+  spinnerContainer.style.display = 'flex';
   logs.textContent = 'Verifying your location, please wait...';
   await runGeo();
   if (!markGeoState) {
