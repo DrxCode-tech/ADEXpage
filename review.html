@@ -1,316 +1,364 @@
 <!DOCTYPE HTML>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>ADEX Reviews</title>
-    <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>ADEX Reviews</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000000;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .profile {
+      background: #111;
+      display: grid;
+      grid-template-areas:
+        'review'
+        'head'
+        'cont'
+        'btn';
+      grid-template-rows: auto 1fr auto;
+      width: 95%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 20px;
+      padding: 20px;
+      gap: 40px;
+      box-shadow: 0 0 25px rgba(0, 255, 100, 0.3);
+      overflow: hidden;
+      transition: 0.3s ease-in-out;
+    }
+
+    .profile:hover {
+      box-shadow: 0 0 40px rgba(80, 255, 80, 0.6);
+    }
+
+    .heading {
+      grid-area: head;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80px;
+      background: radial-gradient(circle, #015901, #32ff3d);
+      border: 2px solid #67fb5a;
+      box-shadow: 0 0 20px #58f94f;
+      border-radius: 15px;
+      font-size: 2.8em;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 20px white;
+    }
+
+    .content {
+      grid-area: cont;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 100%;
+    }
+
+    .content p {
+      width: 90%;
+      height: 50px;
+      background: #1b1b1b;
+      border: 2px solid #707070;
+      border-radius: 12px;
+      text-align: center;
+      line-height: 50px;
+      font-weight: 500;
+      font-size: 1.1em;
+      color: #fff;
+      text-shadow: 0 0 10px #ffffff;
+    }
+
+    .content div {
+      width: 90%;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .content textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 12px;
+      border: 2px solid #67fb5a;
+      background: #101010;
+      color: #ffffff;
+      resize: none;
+      font-size: 1em;
+      box-shadow: inset 0 0 10px rgba(50, 255, 100, 0.2);
+    }
+
+    .button {
+      grid-area: btn;
+      position: relative;
+      width: 90%;
+      height: 50px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: green;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.4em;
+      font-weight: 700;
+      border: 2px solid #86f971;
+      box-shadow: 0 0 20px #4fef32;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      animation: motion 3s infinite linear;
+    }
+
+    .button:hover {
+      transform: scale(1.03);
+    }
+
+    .button::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      bottom: -3px;
+      left: -3px;
+      right: -3px;
+      background-image: linear-gradient(145deg, green 20%, #1afe1a 50%, #51f633 70%);
+      z-index: -1;
+      background-size: 200% 100%;
+    }
+
+    @keyframes motion {
+      0% {
+        box-shadow: 0 0 15px #4fef32;
+        background-position: -200% 100%;
       }
 
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: #000000;
-        height: 100vh;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      50% {
+        box-shadow: 0 0 25px #4fef32;
       }
 
-      .profile {
-        background: #111;
-        display: grid;
-        grid-template-areas:
-          'review'
-          'head'
-          'cont'
-          'btn';
-        grid-template-rows: auto 1fr auto;
-        width: 95%;
-        max-width: 600px;
-        height: auto;
-        border-radius: 20px;
-        padding: 20px;
-        gap: 40px;
-        box-shadow: 0 0 25px rgba(0, 255, 100, 0.3);
-        overflow: hidden;
-        transition: 0.3s ease-in-out;
-      }
-
-      .profile:hover {
-        box-shadow: 0 0 40px rgba(80, 255, 80, 0.6);
-      }
-
-      .heading {
-        grid-area: head;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 80px;
-        background: radial-gradient(circle, #015901, #32ff3d);
-        border: 2px solid #67fb5a;
-        box-shadow: 0 0 20px #58f94f;
-        border-radius: 15px;
-        font-size: 2.8em;
-        font-weight: bold;
-        color: white;
-        text-shadow: 0 0 20px white;
-      }
-
-      .content {
-        grid-area: cont;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-        width: 100%;
-      }
-
-      .content p {
-        width: 90%;
-        height: 50px;
-        background: #1b1b1b;
-        border: 2px solid #707070;
-        border-radius: 12px;
-        text-align: center;
-        line-height: 50px;
-        font-weight: 500;
-        font-size: 1.1em;
-        color: #fff;
-        text-shadow: 0 0 10px #ffffff;
-      }
-
-      .content div {
-        width: 90%;
-        border-radius: 12px;
-        overflow: hidden;
-      }
-
-      .content textarea {
-        width: 100%;
-        padding: 10px;
-        border-radius: 12px;
-        border: 2px solid #67fb5a;
-        background: #101010;
-        color: #ffffff;
-        resize: none;
-        font-size: 1em;
-        box-shadow: inset 0 0 10px rgba(50, 255, 100, 0.2);
-      }
-
-      .button {
-        grid-area: btn;
-        position: relative;
-        width: 90%;
-        height: 50px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: green;
-        border-radius: 12px;
-        color: white;
-        font-size: 1.4em;
-        font-weight: 700;
-        border: 2px solid #86f971;
+      100% {
         box-shadow: 0 0 20px #4fef32;
-        overflow: hidden;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-        animation: motion 3s infinite linear;
+        background-position: 200% 100%;
+      }
+    }
+
+    .noffty {
+      position: fixed;
+      bottom: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 70%;
+      min-height: 40px;
+      height: auto;
+      background: black;
+      border-radius: 10px;
+      color: white;
+      transition-duration: 1s;
+      padding: 5px 2px;
+    }
+
+    .succ {
+      animation: success 3s linear infinite;
+    }
+
+    .err {
+      animation: error 3s linear infinite;
+    }
+
+    @keyframes success {
+
+      0%,
+      100% {
+        box-shadow: 0 0 10px #4fef32;
       }
 
-      .button:hover {
-        transform: scale(1.03);
+      50% {
+        box-shadow: 0 0 30px #4fef32;
+      }
+    }
+
+    @keyframes error {
+
+      0%,
+      100% {
+        box-shadow: 0 0 10px #ff2d2d;
       }
 
-      .button::after {
-        content: '';
-        position: absolute;
-        top: -3px;
-        bottom: -3px;
-        left: -3px;
-        right: -3px;
-        background-image: linear-gradient(145deg, green 20%,#1afe1a 50%, #51f633 70%);
-        z-index: -1;
-        background-size: 200% 100%;
+      50% {
+        box-shadow: 0 0 30px #ff2d2d;
       }
+    }
 
-      @keyframes motion {
-        0% {
-          box-shadow: 0 0 15px #4fef32;
-          background-position: -200% 100%;
-        }
-        50% {
-          box-shadow: 0 0 25px #4fef32;
-        }
-        100% {
-          box-shadow: 0 0 20px #4fef32;
-          background-position: 200% 100%;
-        }
-      }
+    .spinner-container {
+      display: block;
+      backdrop-filter: blur(15px);
+      border-radius: 12px;
+      padding: 4px 3px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
 
-      .noffty {
-        position: fixed;
-        bottom: -100%;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 70%;
-        min-height: 40px;
-        height: auto;
-        background: black;
-        border-radius: 10px;
-        color: white;
-        transition-duration: 1s;
-        padding: 5px 2px;
-      }
+    .spinner {
+      width: 25px;
+      height: 25px;
+      border: 4px solid #4fef32;
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
 
-      .succ {
-        animation: success 3s linear infinite;
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
       }
+    }
 
-      .err {
-        animation: error 3s linear infinite;
-      }
+    .processing {
+      position: fixed;
+      bottom: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      width: 60%;
+      height: 50px;
+      backdrop-filter: blur(15px);
+      padding: 7px 5px;
+      color: white;
+      box-shadow: 0 0 20px rgba(225, 225, 225, 0.3);
+      border: 2px solid rgba(225, 225, 225, 0.2);
+      border-radius: 10px;
+      z-index: 20;
+      font-size: 1.2em;
+      font-weight: 600;
+    }
 
-      @keyframes success {
-        0%, 100% {
-          box-shadow: 0 0 10px #4fef32;
-        }
-        50% {
-          box-shadow: 0 0 30px #4fef32;
-        }
-      }
+    .reviewHead {
+      color: white;
+      grid-area: review;
+    }
 
-      @keyframes error {
-        0%, 100% {
-          box-shadow: 0 0 10px #ff2d2d;
-        }
-        50% {
-          box-shadow: 0 0 30px #ff2d2d;
-        }
-      }
+    .star {
+      background: black;
+      padding: 5px;
+      border-radius: 7px;
+    }
+  </style>
+</head>
 
-      .spinner-container {
-        display: block;
-        backdrop-filter: blur(15px);
-        border-radius: 12px;
-        padding: 4px 3px;
-        box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-        z-index: 10;
-      }
-
-      .spinner {
-        width: 25px;
-        height: 25px;
-        border: 4px solid #4fef32;
-        border-top-color: white;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin: 0 auto;
-      }
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .processing {
-        position: fixed;
-        bottom: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: none;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        width: 60%;
-        height: 50px;
-        backdrop-filter: blur(15px);
-        padding: 7px 5px;
-        color: white;
-        box-shadow: 0 0 20px rgba(225, 225, 225, 0.3);
-        border: 2px solid rgba(225, 225, 225, 0.2);
-        border-radius: 10px;
-        z-index: 20;
-        font-size: 1.2em;
-        font-weight: 600;
-      }
-      
-      .reviewHead{
-        color: white;
-        grid-area: review;
-      }
-      .star{
-        background: black;
-        padding: 5px;
-        border-radius: 7px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="profile">
-      <div class="reviewHead">
-        <h2>REVIEW</h2>
-        <div class="star">
-          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD700" stop-opacity="1" /><stop offset="100%" stop-color="#FFD700" stop-opacity="0" /></radialGradient></defs>
+<body>
+  <div class="profile">
+    <div class="reviewHead">
+      <h2>REVIEW</h2>
+      <div class="star">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFD700" stop-opacity="1" />
+              <stop offset="100%" stop-color="#FFD700" stop-opacity="0" />
+            </radialGradient>
+          </defs>
           <!-- Glowing background -->
           <circle cx="32" cy="32" r="24" fill="url(#glow)" />
           <!-- Star icon -->
-          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z" fill="#FFD700" stroke="#FFC107" stroke-width="2" />
-          </svg>
-          
-          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD700" stop-opacity="1" /><stop offset="100%" stop-color="#FFD700" stop-opacity="0" /></radialGradient></defs>
+          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z"
+            fill="#FFD700" stroke="#FFC107" stroke-width="2" />
+        </svg>
+
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFD700" stop-opacity="1" />
+              <stop offset="100%" stop-color="#FFD700" stop-opacity="0" />
+            </radialGradient>
+          </defs>
           <!-- Glowing background -->
           <circle cx="32" cy="32" r="24" fill="url(#glow)" />
           <!-- Star icon -->
-          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z" fill="#FFD700" stroke="#FFC107" stroke-width="2" />
-          </svg>
-          
-          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD700" stop-opacity="1" /><stop offset="100%" stop-color="#FFD700" stop-opacity="0" /></radialGradient></defs>
+          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z"
+            fill="#FFD700" stroke="#FFC107" stroke-width="2" />
+        </svg>
+
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFD700" stop-opacity="1" />
+              <stop offset="100%" stop-color="#FFD700" stop-opacity="0" />
+            </radialGradient>
+          </defs>
           <!-- Glowing background -->
           <circle cx="32" cy="32" r="24" fill="url(#glow)" />
           <!-- Star icon -->
-          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z" fill="#FFD700" stroke="#FFC107" stroke-width="2" />
-          </svg>
-          
-          <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#FFD700" stop-opacity="1" /><stop offset="100%" stop-color="#FFD700" stop-opacity="0" /></radialGradient></defs>
+          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z"
+            fill="#FFD700" stroke="#FFC107" stroke-width="2" />
+        </svg>
+
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#FFD700" stop-opacity="1" />
+              <stop offset="100%" stop-color="#FFD700" stop-opacity="0" />
+            </radialGradient>
+          </defs>
           <!-- Glowing background -->
           <circle cx="32" cy="32" r="24" fill="url(#glow)" />
           <!-- Star icon -->
-          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z" fill="#FFD700" stroke="#FFC107" stroke-width="2" />
-          </svg>
-        </div>
-        <p>What DON'T you like about ADEX</p>
+          <path d="M32 4L39.09 22.26L58 24.27L43 38.14L47.18 57L32 46.77L16.82 57L21 38.14L6 24.27L24.91 22.26L32 4Z"
+            fill="#FFD700" stroke="#FFC107" stroke-width="2" />
+        </svg>
       </div>
-      <div class="heading">ADEX</div>
-      <div class="content">
-        <p class="name">DanniPa Ani</p>
-        <p class="email">anitie@gmail</p>
-        <div>
-          <textarea cols="35" rows="10" placeholder="Enter your review here..."></textarea>
-        </div>
+      <p>What DON'T you like about ADEX</p>
+    </div>
+    <div class="heading">ADEX</div>
+    <div class="content">
+      <p class="name">DanniPa Ani</p>
+      <p class="email">anitie@gmail</p>
+      <div>
+        <textarea cols="35" rows="10" placeholder="Enter your review here..."></textarea>
       </div>
-      <button class="button">
-        Send
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="26" height="26"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" /></svg>
-      </button>
     </div>
+    <button class="button">
+      Send
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        width="26" height="26">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+      </svg>
+    </button>
+  </div>
 
-    <div class="noffty"></div>
+  <div class="qoute">
+    <p class="moto">innovation for Nigeria !</p>
+    <p class="sub-moto"> Let's reduce the stress</p>
+  </div>
+  <div class="noffty"></div>
 
-    <div class="processing">
-      
-    </div>
+  <div class="processing">
 
-    <script type="module" src="firebaseConfig.js"></script>
-    <script type="module" src="review.js"></script>
-  </body>
+  </div>
+
+  <script type="module" src="firebaseConfig.js"></script>
+  <script type="module" src="review.js"></script>
+</body>
+
 </html>
