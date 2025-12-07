@@ -37,6 +37,9 @@ const cancelVerify = document.querySelector('.cancel-verify');
 const proceedVerify = document.querySelector('.proceed-verify');
 const textPopup = document.querySelector('.text-pop');
 
+//mark Attendance button
+const markBt = document.getElementById('markBtn');
+
 if (!JSON.parse(dtb.getItem('att-his-state')) || JSON.parse(dtb.getItem('att-his-state')) !== 1) {
   dtb.setItem('att-his-state', JSON.stringify(0));
 }
@@ -79,9 +82,6 @@ function statusDisplay(state, txt) {
     messager.style.top = '-100%';
   }, 5000);
 }
-
-//mark Attendance button
-const markBt = document.getElementById('markBtn');
 
 function enableMarkButton(state) {
   markBt.disabled = !state;
@@ -997,7 +997,12 @@ markBt.addEventListener('click', async (e) => {
   const course = cours.replace(/\s+/g, '').toUpperCase();
   checkingForReferencePic();
   const verified = localStorage.getItem("verifiedAdexid");
-  if (verified !== "true") return confirmFaceVerification();
+  if (verified !== "true"){
+    return confirmFaceVerification()
+  }else{
+    console.log('Face verified, proceeding to mark attendance...');
+    markBt.textContent = "Mark Attendance";
+  };
 
   /*if(!navigator.geolocation) return statusDisplay(false,'Geolocation is not supported by your brower!');
   spinnerContainer.style.display = 'block';
