@@ -161,6 +161,7 @@ function onloadMark() {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+  localStorage.setItem("verifiedAdexid", "false");
   onloadMark();
   reviewBut.addEventListener('click', () => {
     window.location.href = 'review.html';
