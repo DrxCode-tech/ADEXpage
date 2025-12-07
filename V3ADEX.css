@@ -479,3 +479,22 @@ html, body {
   padding: 8px 2px;
   width: 70px;
 }
+
+.qoute{
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+.qoute .moto{
+  font-size: 18px;
+  font-weight: 700;
+  color: green;
+}
+.qoute .sub-moto{
+  font-size: 14px;
+  font-weight: 500;
+  color: gray;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
