@@ -84,14 +84,15 @@ function statusDisplay(state, txt) {
 }
 
 function enableMarkButton(state) {
+  const verify = localStorage.getItem("verifiedAdexid");
   markBt.disabled = !state;
   if (state === true) {
     markBt.classList.remove('disabled');
-    markBt.innerHTML = 'Mark Attendance';
+    markBt.textContent = verify === "true" ? 'Mark Attendance' : 'Verify Face_ID';
   }
   else {
     markBt.classList.add('disabled');
-    markBt.innerHTML = 'Account Disabled';
+    markBt.textContent = 'Account Disabled';
   }
 }
 
