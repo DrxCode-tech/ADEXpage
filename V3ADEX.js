@@ -1017,6 +1017,7 @@ markBt.addEventListener('click', async (e) => {
   await runGeo();
   if (!markGeoState) {
     statusDisplay(false, 'You are not in the class location, please move to the class location to mark attendance.');
+    spinnerContainer.style.display = 'none';
     return;
   }
   const dateSlash = getFormattedDate();
