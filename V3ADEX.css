@@ -392,23 +392,21 @@ body {
   z-index: 999;
 }
 
-#spinner{
+#spinner {
   display: none;
-  /* Hidden by default, show when needed */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  backdrop-filter: blur(15px);
-  border-radius: 12px;
-  padding: 25px 30px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-  z-index: 10;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  display: none;
+  gap: 20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(10px);
+  padding: 20px 10px;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  z-index: 100;
   width: 300px;
   height: 70px;
 }
@@ -420,18 +418,12 @@ body {
   border-top-color: white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-
-  box-sizing: border-box;
-  /* keeps it a true circle */
-  flex-shrink: 0;
-  /* prevent stretching */
 }
 
-.logs{
+.logs {
   font-size: 1em;
   font-weight: bold;
   color: #87fc9a;
-  text-align: center;
 }
 
 @keyframes spin {
@@ -439,6 +431,7 @@ body {
     transform: rotate(360deg);
   }
 }
+
 
 .reviewBut {
   position: absolute;
