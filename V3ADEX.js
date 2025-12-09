@@ -375,12 +375,12 @@ function checkAttendanceState() {
 
   switch (day) {
     case 1: // Monday
-      if (hour >= 8 && hour < 10) changeCourse(8, 10, "GST211");
+      if (hour >= 8 && hour < 10) changeCourse(8, 10, "EEE211");
       else if (hour >= 12 && hour < 2) changeCourse(12, 2, "CEE211");
       break;
     case 2: // Tuesday
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "GST211");
-      else if (hour >= 10 && hour < 12) changeCourse(10, 12, "FDE2110");
+      else if (hour >= 10 && hour < 12) changeCourse(10, 12, "FDE211");
       else if (hour >= 12 && hour < 14) changeCours0e(12, 14, "GST215");
       else if (hour >= 14 && hour < 15) changeCourse(14, 15, "GET213");
       else if (hour >= 15 && hour < 17) changeCourse(15, 17, "GET212");
@@ -388,9 +388,9 @@ function checkAttendanceState() {
     case 3: // Wednesday
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "ENT211");
       else if (hour >= 10 && hour < 11) changeCourse(10, 11, "GET213");
-      else if (hour >= 13 && hour < 14) changeCourse(13, 14, "ENT211");
-      else if (hour >= 14 && hour < 16) changeCourse(14, 16, "CEE211");
-      else if (hour >= 16 && hour < 21) changeCourse(16, 21, "GET215");
+      else if (hour >= 13 && hour < 14) changeCourse(13, 14, "GET215");
+      else if (hour >= 14 && hour < 16) changeCourse(14, 16, "ENT211");
+      else if (hour >= 16 && hour < 21) changeCourse(16, 21, "CEE211");
       break;
     case 4: // Thursday
       if (hour >= 9 && hour < 11) changeCourse(9, 11, "CHE212");
@@ -398,8 +398,8 @@ function checkAttendanceState() {
       else if (hour >= 14 && hour < 16) changeCourse(14, 16, "GET211");
       else if (hour >= 16 && hour < 17) changeCourse(16, 17, "PEE211");
       break;
-    case 0: // Friday
-      if (hour >= 2 && hour < 18) changeCourse(2, 18, "GET214");
+    case 5: // Friday
+      if (hour >= 8 && hour < 10) changeCourse(8, 10, "GET214");
       else if (hour >= 9 && hour < 10) changeCourse(
         9, 10, "GET212");
       else if (hour >= 10 && hour < 11) changeCourse(10, 11, "GET211")
