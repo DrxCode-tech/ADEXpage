@@ -334,7 +334,6 @@ async function displayUserDetails(user) {
   document.querySelector('.user-nm').innerHTML = user.name || `<a href="ADEXlogin.html">Login</a>`;
   document.querySelector('.department').textContent = user.dept;
   const date = getDashedDate();
-  const isOffline = await isReallyOnline();
   // Call this on page load
   await trackPageView();
   checkingForReferencePic();
