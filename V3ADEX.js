@@ -380,7 +380,7 @@ function checkAttendanceState() {
       break;
     case 2: // Tuesday
       if (hour >= 8 && hour < 10) changeCourse(8, 10, "GST211");
-      else if (hour >= 10 && hour < 12) changeCourse(10, 12, "FDE2110");
+      else if (hour >= 10 && hour < 12) changeCourse(10, 12, "FDE211");
       else if (hour >= 12 && hour < 14) changeCours0e(12, 14, "GST215");
       else if (hour >= 14 && hour < 15) changeCourse(14, 15, "GET213");
       else if (hour >= 15 && hour < 17) changeCourse(15, 17, "GET212");
@@ -1232,6 +1232,7 @@ function trySyncStoredAttendance(DB, interval) {
     };
   });
 }
+
 
 
 
