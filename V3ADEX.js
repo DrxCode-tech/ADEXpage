@@ -413,48 +413,108 @@ function checkAttendanceState() {
   }
 }
 async function loadAttendance() {
+  // 1. Connectivity check
   const isOnline = await isReallyOnline();
-  if (!navigator.onLine) {
-    attView.classList.add('errorView');
-    attView.innerHTML = `
-    <p style='display:flex;justify-content:center;align-items:center;gap:5px;'>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wifi-off-icon lucide-wifi-off"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></svg>
-      You are currently offline</p>`;
+  if (!navigator.onLine || !isOnline) {
+    attView.classList.add("errorView");
+    attView.innerHTML = offlineHTML(
+      navigator.onLine ? "You're having a poor connectivity" : "You are currently offline"
+    );
     return;
   }
-  if (!isOnline) {
-    attView.classList.add('errorView');
-    attView.innerHTML = `
-    <p style='display:flex;justify-content:center;align-items:center;gap:5px;'>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-wifi-off-icon lucide-wifi-off"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></svg>
-      You're having a poor connectivity</p>`;
-    return;
-  }
+
+  // 2. Course & dept check
   const dept = Department.textContent.trim();
   const course = currentCourseDisplay.textContent.trim().toUpperCase();
-  if (course === 'no class') {
-    attView.innerHTML = '<h3>No class yet!</h3>';
+  if (course === "NO CLASS") {
+    attView.innerHTML = "<h3>No class yet!</h3>";
     return;
   }
 
+  // 3. Load attendance
   const date = getCurrentDate();
-  const collectionRef = collection(db, course, date, dept); // /course/date/dept
+  const summaryRef = doc(db, course, date, dept, "_summary"); // one small doc
 
-  onSnapshot(collectionRef, (snapshot) => {
-    if (snapshot.empty) {
-      attView.innerHTML = `<h3>No student marked yet</h3>`;
+  try {
+    const cached = JSON.parse(localStorage.getItem("attCache") || "{}");
+    const cacheKey = `${course}_${date}_${dept}`;
+
+    // --------------------- VERY LOW FIREBASE READS -------------------------
+    // Fetch only metadata to see if the doc changed
+    const meta = await getDoc(summaryRef);
+
+    if (!meta.exists()) {
+      attView.innerHTML = "<h3>No student marked yet</h3>";
       return;
     }
 
-    attView.innerHTML = `<h2>${dept} Students who marked</h2>`;
-    let users = '';
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      users += `<p>${data.name} RegNo: ${data.regNm} just mark Attendance</p>`;
-    });
-    attView.innerHTML += users;
-  });
+    const serverUpdateTime = meta.updateTime?.seconds || null;
+
+    // If cache available and same update time → use cache (0 reads)
+    if (
+      cached[cacheKey] &&
+      cached[cacheKey].updateTime === serverUpdateTime
+    ) {
+      renderAttendance(cached[cacheKey].data, dept);
+      return;
+    }
+
+    // Fetch document fully (1 read)
+    const docSnap = await getDoc(summaryRef);
+    const data = docSnap.data();
+
+    // Save to cache
+    cached[cacheKey] = {
+      updateTime: serverUpdateTime,
+      data
+    };
+    localStorage.setItem("attCache", JSON.stringify(cached));
+
+    renderAttendance(data, dept);
+  } catch (err) {
+    console.error("Attendance load error:", err);
+    attView.innerHTML = "<h3>Error loading attendance</h3>";
+  }
 }
+
+// ---------------------------------------------------------
+// UI Helpers
+// ---------------------------------------------------------
+function offlineHTML(message) {
+  return `
+    <p style='display:flex;justify-content:center;align-items:center;gap:5px;'>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" 
+      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+      stroke-linecap="round" stroke-linejoin="round" 
+      class="lucide lucide-wifi-off">
+        <path d="M12 20h.01"/>
+        <path d="M8.5 16.429a5 5 0 0 1 7 0"/>
+        <path d="M5 12.859a10 10 0 0 1 5.17-2.69"/>
+        <path d="M19 12.859a10 10 0 0 0-2.007-1.523"/>
+        <path d="M2 8.82a15 15 0 0 1 4.177-2.643"/>
+        <path d="M22 8.82a15 15 0 0 0-11.288-3.764"/>
+        <path d="m2 2 20 20"/>
+      </svg>
+      ${message}
+    </p>`;
+}
+
+function renderAttendance(data, dept) {
+  if (!data || !data.students || data.students.length === 0) {
+    attView.innerHTML = `<h3>No student marked yet</h3>`;
+    return;
+  }
+
+  attView.innerHTML = `<h2>${dept} Students who marked</h2>`;
+  let html = "";
+
+  data.students.forEach((s) => {
+    html += `<p>${s.name} RegNo: ${s.regNm} just marked attendance</p>`;
+  });
+
+  attView.innerHTML += html;
+}
+
 let reviewSt = false;
 attReview.addEventListener('click', async () => {
   await loadAttendance();
