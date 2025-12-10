@@ -61,12 +61,16 @@
     font-size: 1em;
   }
 
+  marquee{
+    color: green;
+  }
+
   input[type=file] { display: none; }
 </style>
 </head>
 
 <body>
-
+<marquee>Face detection by ADEX tech ... warning to pls make use of your face for verification as using of anothers face would lead to complicated issues with your account !</marquee>
 <div id="videoContainer">
   <video id="video" autoplay playsinline></video>
 </div>
@@ -86,7 +90,7 @@ import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/11.5.0/firebase-
 const checkingPermission = localStorage.getItem("take_Image");
 
 if (!checkingPermission) {
-  window.location.replace("V3ADEX.html");
+  window.location.href = "V3ADEX.html";
 }
 
 

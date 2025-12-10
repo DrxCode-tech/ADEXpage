@@ -673,60 +673,6 @@ function runGeoWatch() {
   });
 }
 
-
-/*
-async function getGeoLocsUI() {
-  const userLocs = [];
-  const coor = [5.0385, 7.9754, 5.0398, 7.9765];
-  const [minLat, minLong, maxLat, maxLong] = coor;
-
-  function getLocation() {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          resolve({ latitude, longitude });
-        },
-        (error) => {
-          reject(error);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        }
-      );
-    });
-  }
-
-  console.log("Trying multiple location attempts...")
-  try {
-    for (let i = 0; i < 5; i++) {
-      const { latitude, longitude } = await getLocation();
-      let loc = latitude+" "+longitude;
-      alert(loc);
-      userLocs.push({ latitude, longitude });
-    }
-
-    const filtered = userLocs.filter(loc => {
-      return (
-        loc.latitude >= minLat && loc.latitude <= maxLat &&
-        loc.longitude >= minLong && loc.longitude <= maxLong
-      );
-    });
-
-    if (filtered.length >= 2) {
-      console.log("✅ You are at the correct location.");
-      return true;
-    } else {
-      console.log("❌ You are not at the expected location.");
-      
-    }
-  } catch (err) {
-    statusDisplay(false,`⚠️ Location error: ${err.message}`);
-  }
-}*/
-
 async function batchMarkAttendance(studentList, course, date) {
   const batch = writeBatch();
 
@@ -1044,12 +990,15 @@ async function markPortal(output, name, regNm, department, course, date, student
     localStorage.setItem("verifiedAdexid", "false");
     switch (output.state) {
       case false:
-        return await warning(student);
+        await warning(student);
+        break;
       case 'Time_past':
-        return alert('Portal has already been CLOSED...pls meet with the class Rep or ADEX to show you were present in class!');
+        alert('Portal has already been CLOSED...pls meet with the class Rep or ADEX to show you were present in class!');
+        break;
       case true:
         logs.textContent = 'Checking portal...';
-        return await markAttendance(name, regNm, department, course, date, level);
+        await markAttendance(name, regNm, department, course, date, level);
+        break;
     }
   } catch (err) {
     console.log('Error from markPortal :', err.message);
@@ -1090,22 +1039,8 @@ markBt.addEventListener('click', async (e) => {
     markBt.textContent = "Mark Attendance";
   };
 
-  /*if(!navigator.geolocation) return statusDisplay(false,'Geolocation is not supported by your brower!');
-  spinnerContainer.style.display = 'block';
-  try{
-    const verifyGeo = await getGeoLocsUI();
-    if(!verifyGeo){
-      spinnerContainer.style.display = 'none';
-      statusDisplay(false,'Warning you are not in class!');
-      return;
-    }
-  }catch(err){
-    statusDisplay(false,'Internet error check connection');
-    return;
-  }
-  */
   spinnerContainer.style.display = 'flex';
-  logs.textContent = 'Verifying your location, please wait...';
+  logs.textContent = "ADEX's verifying your location, please wait...";
   await runGeoWatch();
   if (!markGeoState) {
     statusDisplay(false, 'You are not in the class location, please move to the class location to mark attendance.');

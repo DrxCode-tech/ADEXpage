@@ -1,99 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Glowing Timetable</title>
-    <link rel="icon" href="adex-img.jpg" type="image/jpg" />
-    <link rel="stylesheet" href="table.css">
+<meta charset="UTF-8" />
+<title>Smart Timetable</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    th {
+        background: #333;
+        color: white;
+    }
+
+    /* ONLY current class slot glows */
+    .active {
+        background: #00cc44 !important;
+        color: white !important;
+        font-weight: bold;
+        box-shadow: 0 0 20px #00ff66;
+        animation: glow 1s infinite alternate;
+    }
+
+    @keyframes glow {
+        from { box-shadow: 0 0 12px #00ff66; }
+        to   { box-shadow: 0 0 30px #00ff66; }
+    }
+</style>
 </head>
-
 <body>
-    <h1 class="title">Weekly Course Timetable</h1>
 
-    <div class="table">
-        <div class="row header">
-            <div class="cell">Time</div>
-            <div class="cell">Mon</div>
-            <div class="cell">Tue</div>
-            <div class="cell">Wed</div>
-            <div class="cell">Thu</div>
-            <div class="cell">Fri</div>
-        </div>
+<h1>Weekly Timetable</h1>
 
-        <!-- 8AM -->
-        <div class="row">
-            <div class="cell">8:00</div>
-            <div class="cell" id="Mon-8">GST211</div>
-            <div class="cell" id="Tue-8">GST211</div>
-            <div class="cell" id="Wed-8">ENT211</div>
-            <div class="cell" id="Thu-8"></div>
-            <div class="cell" id="Fri-8">GET214</div>
-        </div>
+<table>
+    <tr>
+        <th>Day</th>
+        <th>8 - 10</th>
+        <th>10 - 12</th>
+        <th>12 - 14</th>
+        <th>14 - 16</th>
+        <th>16 - 17</th>
+        <th>17+</th>
+    </tr>
 
-        <!-- 9AM -->
-        <div class="row">
-            <div class="cell">9:00</div>
-            <div class="cell" id="Mon-9"></div>
-            <div class="cell" id="Tue-9"></div>
-            <div class="cell" id="Wed-9"></div>
-            <div class="cell" id="Thu-9">CHE212</div>
-            <div class="cell" id="Fri-9">GET212</div>
-        </div>
+    <tr>
+        <th>Monday</th>
+        <td id="M_8_10">EEE211</td>
+        <td></td>
+        <td id="M_12_14">CEE211</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
 
-        <!-- 10AM -->
-        <div class="row">
-            <div class="cell">10:00</div>
-            <div class="cell" id="Mon-10"></div>
-            <div class="cell" id="Tue-10">FDE2110</div>
-            <div class="cell" id="Wed-10">GET213</div>
-            <div class="cell" id="Thu-10">GET214</div>
-            <div class="cell" id="Fri-10">GET211</div>
-        </div>
+    <tr>
+        <th>Tuesday</th>
+        <td id="T_8_10">GST211</td>
+        <td id="T_10_12">FDE211</td>
+        <td id="T_12_14">GST215</td>
+        <td id="T_14_15">GET213</td>
+        <td id="T_15_17">GET212</td>
+        <td></td>
+    </tr>
 
-        <!-- 12PM -->
-        <div class="row">
-            <div class="cell">12:00</div>
-            <div class="cell" id="Mon-12">CEE211</div>
-            <div class="cell" id="Tue-12">GST215</div>
-            <div class="cell" id="Wed-12"></div>
-            <div class="cell" id="Thu-12">GET211</div>
-            <div class="cell" id="Fri-12">PEE211</div>
-        </div>
+    <tr>
+        <th>Wednesday</th>
+        <td id="W_8_10">ENT211</td>
+        <td id="W_10_11">GET213</td>
+        <td></td>
+        <td id="W_13_14">GET215</td>
+        <td id="W_14_16">ENT211</td>
+        <td id="W_16_21">CEE211</td>
+    </tr>
 
-        <!-- 14PM -->
-        <div class="row">
-            <div class="cell">14:00</div>
-            <div class="cell" id="Mon-14">GET213</div>
-            <div class="cell" id="Tue-14">GET213</div>
-            <div class="cell" id="Wed-14">CEE211</div>
-            <div class="cell" id="Thu-14">GET211</div>
-            <div class="cell" id="Fri-14">CHE211</div>
-        </div>
+    <tr>
+        <th>Thursday</th>
+        <td></td>
+        <td id="TH_9_11">CHE212</td>
+        <td id="TH_12_14">GET214</td>
+        <td id="TH_14_16">GET211</td>
+        <td id="TH_16_17">PEE211</td>
+        <td></td>
+    </tr>
 
-        <!-- 15PM -->
-        <div class="row">
-            <div class="cell">15:00</div>
-            <div class="cell" id="Mon-15"></div>
-            <div class="cell" id="Tue-15">GET212</div>
-            <div class="cell" id="Wed-15"></div>
-            <div class="cell" id="Thu-15">PEE211</div>
-            <div class="cell" id="Fri-15">ENT211</div>
-        </div>
+    <tr>
+        <th>Friday</th>
+        <td id="F_8_10">GET214</td>
+        <td id="F_9_10">GET212</td>
+        <td id="F_10_11">GET211</td>
+        <td id="F_11_13">PEE211</td>
+        <td id="F_14_15">CHE211</td>
+        <td id="F_15_17">ENT211</td>
+    </tr>
+</table>
 
-        <!-- 16PM/17PM row -->
-        <div class="row">
-            <div class="cell">16:00+</div>
-            <div class="cell" id="Mon-16"></div>
-            <div class="cell" id="Tue-16">GET212</div>
-            <div class="cell" id="Wed-16">GET215</div>
-            <div class="cell" id="Thu-16"></div>
-            <div class="cell" id="Fri-16"></div>
-        </div>
-    </div>
+<script>
+// CLEAR highlight before applying new one
+function clearActive() {
+    document.querySelectorAll("td").forEach(td => td.classList.remove("active"));
+}
 
-    <div class="qoute">
-        👉 Mark with <span>ADEX</span> ...thats what we are here for!
-    </div>
-    <script src="table.js"></script>
+// ACTIVATE a specific cell by its ID
+function activate(id) {
+    clearActive();
+    const cell = document.getElementById(id);
+    if (cell) cell.classList.add("active");
+}
+
+function checkAttendanceState() {
+    const now = new Date();
+    const day = now.getDay();
+    const hour = now.getHours();
+
+    clearActive(); // reset before applying
+
+    switch (day) {
+        case 1: // Monday
+            if (hour >= 8 && hour < 10) activate("M_8_10");
+            else if (hour >= 12 && hour < 14) activate("M_12_14");
+            break;
+
+        case 2: // Tuesday
+            if (hour >= 8 && hour < 10) activate("T_8_10");
+            else if (hour >= 10 && hour < 12) activate("T_10_12");
+            else if (hour >= 12 && hour < 14) activate("T_12_14");
+            else if (hour >= 14 && hour < 15) activate("T_14_15");
+            else if (hour >= 15 && hour < 17) activate("T_15_17");
+            break;
+
+        case 3: // Wednesday
+            if (hour >= 8 && hour < 10) activate("W_8_10");
+            else if (hour >= 10 && hour < 11) activate("W_10_11");
+            else if (hour >= 13 && hour < 14) activate("W_13_14");
+            else if (hour >= 14 && hour < 16) activate("W_14_16");
+            else if (hour >= 16 && hour < 21) activate("W_16_21");
+            break;
+
+        case 4: // Thursday
+            if (hour >= 9 && hour < 11) activate("TH_9_11");
+            else if (hour >= 12 && hour < 14) activate("TH_12_14");
+            else if (hour >= 14 && hour < 16) activate("TH_14_16");
+            else if (hour >= 16 && hour < 17) activate("TH_16_17");
+            break;
+
+        case 5: // Friday
+            if (hour >= 8 && hour < 10) activate("F_8_10");
+            else if (hour >= 9 && hour < 10) activate("F_9_10");
+            else if (hour >= 10 && hour < 11) activate("F_10_11");
+            else if (hour >= 11 && hour < 13) activate("F_11_13");
+            else if (hour >= 14 && hour < 15) activate("F_14_15");
+            else if (hour >= 15 && hour < 17) activate("F_15_17");
+            break;
+
+        default:
+            console.log("Weekend – No classes today.");
+    }
+}
+
+// Run now + update every 1 min
+checkAttendanceState();
+setInterval(checkAttendanceState, 60000);
+</script>
+
 </body>
 </html>
